@@ -1,4 +1,4 @@
-import Message from "../models/message.model.js";
+import {Message} from "../models/message.model.js";
 export const getUsersForSidebar= async(req,res)=>{
     try{
         const loggedInUserId= req.user._id;
@@ -28,7 +28,7 @@ export const getMeassages= async(req,res)=>{
     }
 }
 
-const sendMessage= async(req,res)=>{
+export const sendMessage= async(req,res)=>{
     try{    
         const {id:receiverId}= req.params;
         const senderId=req.user._id;
