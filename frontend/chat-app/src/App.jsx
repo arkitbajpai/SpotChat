@@ -10,6 +10,7 @@ import { axiosInstance } from './lib/axios';
 import {useAuthStore} from './store/useAuthStore.js';
 import { useEffect } from 'react';
 import { Loader } from 'lucide-react';
+import { Toaster } from 'react-hot-toast';
 const App = () => {
   const {authUser,checkAuth,isCheckingAuth}=useAuthStore();
   useEffect(()=>{
@@ -34,6 +35,7 @@ const App = () => {
         <Route path="/settings" element={<SettingPage/>} />
         
       </Routes>
+      <Toaster />
     </div>
   )
 };
