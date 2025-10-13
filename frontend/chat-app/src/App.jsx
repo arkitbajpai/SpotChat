@@ -25,7 +25,9 @@ const App = () => {
         </div>
         )
   return (
+    
     <div  >
+      
       <Navbar />
       <Routes>
         <Route path="/" element={authUser ? <HomePage/>:<Navigate to ="/login"/>} />

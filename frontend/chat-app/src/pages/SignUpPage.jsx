@@ -16,6 +16,7 @@ const SignUpPage = () => {
   });
 
   const{signup, isSigningUp}= useAuthStore();
+
   const validateForm=()=>{
      if(!formData.fullName.trim())
       return toast.error("Full Name is required");
@@ -33,14 +34,12 @@ const SignUpPage = () => {
 
       return true;
 
-  }
+  };
   const handleSubmit=(e)=>{
     e.preventDefault();
     const isValid=validateForm();
     if(isValid) 
       signup(formData);
-
-
   }
 
   return (
@@ -57,7 +56,9 @@ const SignUpPage = () => {
             <p className="text-base-content/60">Get started with your free account</p>
             </div>
         </div>
-        <form onSubmit={handleSubmit} className="space-y-6">
+       
+
+ <form onSubmit={handleSubmit} className="space-y-6">
 
 <div className="form-control">
   <label className="label">

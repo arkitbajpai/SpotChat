@@ -1,8 +1,10 @@
 import {create} from 'zustand';
 import { axiosInstance } from '../lib/axios';
+import { toast } from 'react-hot-toast';
+
 export const useAuthStore=create((set)=>({
     authUser:null,
-    isSinginUp:false,
+    isSigningUp:false,
     isLoggingIn:false,
     isUpdatingProfile:false,
     isCheckingAuth:true,
@@ -21,7 +23,7 @@ export const useAuthStore=create((set)=>({
     },
     
     signup:async(data)=>{
-        set({isSinginUp:true});
+        set({isSigningUp:true});
         try{
             const res= await axiosInstance.post('/auth/signup',data);
             set({authUser:res.data});
@@ -32,7 +34,7 @@ export const useAuthStore=create((set)=>({
             toast.error(err.response?.data?.message || "Something went wrong");
         }
         finally{
-            set({isSinginUp:false});
+            set({isSigningUp:false});
         }
     }
 
