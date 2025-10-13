@@ -1,6 +1,6 @@
 import React from 'react'
 import Navbar from './components/Navbar'
-import {Routes,Route} from 'react-router-dom';
+import {Routes,Route,Navigate} from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import SignUpPage from './pages/SignUpPage';
 import LoginPage from './pages/LoginPage';
@@ -18,9 +18,11 @@ const App = () => {
 
   if(isCheckingAuth&& ! authUser)
     return (
+  console.log(authUser),
       <div className='flex justify-center items-center h-screen'>
         <Loader className= "size-10 animate-spin"/>
-        </div>)
+        </div>
+        )
   return (
     <div  >
       <Navbar />
