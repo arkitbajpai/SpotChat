@@ -1,7 +1,7 @@
 import {create} from 'zustand';
 import { axiosInstance } from '../lib/axios';
 import { toast } from 'react-hot-toast';
-import { login, logout } from '../../../../backend/src/controllers/auth.controller';
+//import { login, logout } from '../../../../backend/src/controllers/auth.controller';
 
 export const useAuthStore=create((set)=>({
     authUser:null,
@@ -17,7 +17,7 @@ export const useAuthStore=create((set)=>({
             set({authUser:res.data});
         }
         catch(err){
-   set({authUser:null});
+           set({authUser:null});
         } finally{
             set({isCheckingAuth:false});
         }
@@ -36,6 +36,18 @@ export const useAuthStore=create((set)=>({
         }
         finally{
             set({isSigningUp:false});
+        }
+    },
+    login:async(data)=>{
+        set({isLoggingIn:true});
+        try{
+            const res= await axiosInstance.post('/auth/login',data);
+            set({authUser:res.data});
+            toast.success("Login successful");
+        }   catch(err){
+            toast.error(err.response?.data?.message || "Something went wrong");
+        } finally{
+            set({isLoggingIn:false});
         }
     },
 

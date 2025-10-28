@@ -1,5 +1,7 @@
 import { grenrateToken } from "../lib/utils.js";
 import {User} from "../models/user.model.js";
+import bcrypt from "bcryptjs";
+
 export const signup= async(req,res)=>{
     const {email,fullName,password}= req.body;
    try{
@@ -9,7 +11,7 @@ export const signup= async(req,res)=>{
     if(password.length<6){
         return res.status(400).json({message:"Password must be at least 6 characters long"});
     }
-    const existingUser= await User.find({email});
+    const existingUser= await User.findOne({email});
     if(existingUser){
         return res.status(400).json({message:"User already exists"});
     }
@@ -17,7 +19,7 @@ export const signup= async(req,res)=>{
     const hashPassword= await bcrypt.hash(password,salt);
     const newUser= new User({
         email:email,
-        fullname:fullName,
+        fullName:fullName,
         password:hashPassword,
     });
 
@@ -39,6 +41,7 @@ export const signup= async(req,res)=>{
 
    }
     catch(err){
+        console.error("Signup error:", err);
         res.status(500).json({message:"Internal server error"});
    }
 }
@@ -47,9 +50,10 @@ export const login= async(req,res)=>{
     try{
         const user= await User.findOne({email});
         if(!user){
+            console.log("User not found for email:", email);
             return res.status(400).json({message:"Invalid email or password"});
         }
-      const isPasswordCorrect= await bcrypt.comapre(password,user.password);
+      const isPasswordCorrect= await bcrypt.compare(password,user.password);
       if(!isPasswordCorrect){
         return res.status(400).json({message:"Invalid email or password"});
       }
