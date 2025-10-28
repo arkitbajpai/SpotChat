@@ -1,6 +1,7 @@
 import {create} from 'zustand';
 import { axiosInstance } from '../lib/axios';
 import { toast } from 'react-hot-toast';
+import { updateProfile } from '../../../../backend/src/controllers/auth.controller';
 //import { login, logout } from '../../../../backend/src/controllers/auth.controller';
 
 export const useAuthStore=create((set)=>({
@@ -62,6 +63,8 @@ export const useAuthStore=create((set)=>({
         }
 
     },
+    updateProfile:async(data)=>{},
+    
     
 
 }));
