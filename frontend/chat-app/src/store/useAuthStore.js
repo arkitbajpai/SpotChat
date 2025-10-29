@@ -33,6 +33,7 @@ export const useAuthStore=create((set)=>({
 
         }
         catch(err){
+             console.log(err);
             toast.error(err.response?.data?.message || "Something went wrong");
         }
         finally{
@@ -46,6 +47,7 @@ export const useAuthStore=create((set)=>({
             set({authUser:res.data});
             toast.success("Login successful");
         }   catch(err){
+            console.log(err);
             toast.error(err.response?.data?.message || "Something went wrong");
         } finally{
             set({isLoggingIn:false});
@@ -59,6 +61,7 @@ export const useAuthStore=create((set)=>({
             toast.success("Logout successful");
         }
         catch(err){
+             console.log(err);
             toast.error(err.response?.data?.message || "Something went wrong");
         }
 

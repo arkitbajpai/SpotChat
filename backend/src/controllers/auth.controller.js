@@ -1,6 +1,7 @@
-import { grenrateToken } from "../lib/utils.js";
+import { generateToken } from "../lib/utils.js";
 import {User} from "../models/user.model.js";
 import bcrypt from "bcryptjs";
+import cloudinary from "../lib/cloudinary.js";
 
 export const signup= async(req,res)=>{
     const {email,fullName,password}= req.body;
@@ -24,7 +25,7 @@ export const signup= async(req,res)=>{
     });
 
     if(newUser){
-       grenrateToken(newUser._id,res);
+       generateToken(newUser._id,res);
        await newUser.save();
          return res.status(200).json({
         message:"User created successfully",
@@ -42,7 +43,7 @@ export const signup= async(req,res)=>{
    }
     catch(err){
         console.error("Signup error:", err);
-        res.status(500).json({message:"Internal server error"});
+        res.status(500).json({message:"Internal server error at signup"});
    }
 }
 export const login= async(req,res)=>{
@@ -57,7 +58,7 @@ export const login= async(req,res)=>{
       if(!isPasswordCorrect){
         return res.status(400).json({message:"Invalid email or password"});
       }
-        grenrateToken(user._id,res);
+        generateToken(user._id,res);
         res.status(200).json({
             message:"Login successful",
             user:{  
@@ -69,7 +70,7 @@ export const login= async(req,res)=>{
 
     }
      catch(err){
-         res.status(500).json({message:"Internal server error"});
+         res.status(500).json({message:"Internal server error at login"});
     }
 
 }
@@ -81,7 +82,7 @@ export const logout= (req,res)=>{
         res.status(200).json({message:"Logout successful"});
     }
     catch(err){
-        res.status(500).json({message:"Internal server error"});
+        res.status(500).json({message:"Internal server error at logout"});
     }
 }
 export const updateProfile= async(req,res)=>{
@@ -101,13 +102,14 @@ export const updateProfile= async(req,res)=>{
          });
     }
     catch(err){
-        res.status(500).json({message:"Internal server error"});
+        console.log(err);
+        res.status(500).json({message:"Internal server error at updateProfile"});
     }
 }
 export const checkAuth=(req,res)=>{
    try{
     res.status(200).json(req.user);
     } catch(err){
-        res.status(500).json({message:"Internal server error"});   
+        res.status(500).json({message:"Internal server error at checkAuth"}); 
    }
 }
