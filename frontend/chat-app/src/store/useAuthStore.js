@@ -69,7 +69,7 @@ export const useAuthStore=create((set)=>({
     updateProfile:async(data)=>{
         set({isUpdatingProfile:true});
         try{
-            await axiosInstance.put('/auth/update-profile',data)
+           const res= await axiosInstance.put('/auth/update-profile',data)
             set({
                 authUser:res.data 
             });
@@ -77,7 +77,7 @@ export const useAuthStore=create((set)=>({
 
         } catch(err){
             console.log(err);
-            toast.error(err.response?.data?.message || "Something went wrong");
+            toast.error(err.response?.data?.message || "Something went wrong at updating profile");
         } finally{
             set({isUpdatingProfile:false});
         }

@@ -1,5 +1,6 @@
 import axios from "axios";
 export const axiosInstance=axios.create({
     baseURL:"http://localhost:5001/api",
-    withCredentials:true,   // Enable sending cookies with requests
+    withCredentials:true, 
+   // Enable sending cookies with requests
 });
