@@ -1,20 +1,25 @@
-import React from 'react'
-import Navbar from './components/Navbar'
+import Navbar from './components/Navbar.jsx'
+
 import {Routes,Route,Navigate} from 'react-router-dom';
-import HomePage from './pages/HomePage';
-import SignUpPage from './pages/SignUpPage';
-import LoginPage from './pages/LoginPage';
-import ProfilePage from './pages/ProfilePage';
-import SettingPage from './pages/SettingPage';
-import { axiosInstance } from './lib/axios';
+
+import HomePage from './pages/HomePage.jsx';
+import SignUpPage from './pages/SignUpPage.jsx';
+import LoginPage from './pages/LoginPage.jsx';
+import ProfilePage from './pages/ProfilePage.jsx';
+import SettingPage from './pages/SettingPage.jsx';
+
+
 import {useAuthStore} from './store/useAuthStore.js';
 import { useEffect } from 'react';
+
 import { Loader } from 'lucide-react';
 import { Toaster } from 'react-hot-toast';
+
 import { useThemeStore } from './store/useThemeStore.js';
 const App = () => {
   const {authUser,checkAuth,isCheckingAuth}=useAuthStore();
- const {theme}= useThemeStore()
+  const {theme}= useThemeStore();
+
   useEffect(()=>{
     checkAuth();
   },[checkAuth]);
@@ -22,10 +27,11 @@ const App = () => {
   if(isCheckingAuth && !authUser)
     return (
   console.log(authUser),
-      <div className='flex justify-center items-center h-screen'>
+      <div className='flex items-center justify-center h-screen'>
         <Loader className= "size-10 animate-spin"/>
         </div>
-        )
+        );
+
   return (
     
     <div data-theme={theme} >
@@ -39,9 +45,10 @@ const App = () => {
         <Route path="/settings" element={<SettingPage/>} />
         
       </Routes>
+
       <Toaster />
     </div>
-  )
+  );
 };
 
 export default App
