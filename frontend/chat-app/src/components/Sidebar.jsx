@@ -11,18 +11,18 @@ const Sidebar = () => {
 
    
    const { onlineUsers } = useAuthStore();
-  const [showOnlineOnly, setShowOnlineOnly] = useState(false);
+  //const [showOnlineOnly, setShowOnlineOnly] = useState(false);
 
    useEffect(()=>{
     getUsers();
    },[getUsers]);
    
-  const filteredUsers = showOnlineOnly
-    ? users.filter((user) => onlineUsers.includes(user._id))
-    : users;
-   if(isUserLoading){
-    return <SidebarSkeleton />;
-   }
+  // const filteredUsers = showOnlineOnly
+  //   ? users.filter((user) => onlineUsers.includes(user._id))
+  //   : users;
+  //  if(isUserLoading){
+  //   return <SidebarSkeleton />;
+  //  }
 
 
   return (
