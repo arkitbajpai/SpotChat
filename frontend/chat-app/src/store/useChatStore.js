@@ -2,9 +2,8 @@ import {create} from 'zustand';
 import toast from 'react-hot-toast';
 import { axiosInstance } from '../lib/axios';
 
-
 export const useChatStore =create((set)=>({
-    message:[],
+    messages:[],
     users:[],
     selectedUser:null,
     isUserLoading:false,
@@ -15,7 +14,10 @@ export const useChatStore =create((set)=>({
         set({isUserLoading:true});
         try{
             const res = await axiosInstance.get("/messages/users");
-            set({users:res.data});
+            
+            console.log("Users from Zustand:", res.data);
+
+            set({users: res.data});
         }catch(err){
             toast.error("Failed to fetch users");
             console.log("getUsers error:", err);
@@ -27,7 +29,7 @@ export const useChatStore =create((set)=>({
         set({isMessageLoading:true});
         try{
             const res = await axiosInstance.get(`/messages/${userId}`);
-            set({message:res.data});
+            set({messages:res.data});
         }catch(err){
             toast.error("Failed to fetch messages");
             console.log("getMessages error:", err);
