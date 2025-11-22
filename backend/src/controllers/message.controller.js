@@ -1,4 +1,5 @@
 import {Message} from "../models/message.model.js";
+import {User} from "../models/user.model.js";
 export const getUsersForSidebar= async(req,res)=>{
     try{
         const loggedInUserId= req.user._id;
@@ -11,7 +12,7 @@ export const getUsersForSidebar= async(req,res)=>{
 }
 export const getMeassages= async(req,res)=>{
     try{
-        const{id:userToChatId}=req.prams;
+        const{id:userToChatId}=req.params;
         const myId= req.user._id;
 
         const senderId=req.user._id;
