@@ -9,7 +9,7 @@ const MessageInput = () => {
     const fileInputRef = useRef(null);
     const {sendMessage} = useChatStore();
     const handleImageChange=(e)=>{
-        const file = e.target.file[0];
+        const file = e.target.files[0];
         if(!file.type.startsWith("image/")){
             toast.error("Please select a valid image file");
             return;
@@ -34,8 +34,10 @@ const MessageInput = () => {
         return;
     }
     try{
-        await sendMessage({text:text.trim(),
-            image:imagePreview});
+        await sendMessage({
+            text:text.trim(),
+            image:imagePreview
+        });
             setText("");
             removeImagePreview(null);
             if(fileInputRef.current){
