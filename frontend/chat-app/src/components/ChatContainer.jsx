@@ -1,39 +1,60 @@
-import React from 'react'
-import { useChatStore } from '../store/useChatStore';
-import { useEffect } from 'react';
+import React, { useEffect, useRef } from "react";
+import { useChatStore } from "../store/useChatStore";
+import { useAuthStore } from "../store/useAuthStore";
 
-import ChatHeader from './ChatHeader';
-import MessageInput from './MessageInput';
-import MessageSkeleton from './skeletons/MessageSkeleton';
-
+import ChatHeader from "./ChatHeader";
+import MessageInput from "./MessageInput";
+import MessageSkeleton from "./skeletons/MessageSkeleton";
+import { formatMessageTime } from "../lib/utils";
 
 const ChatContainer = () => {
-  const{messages,getMessages, isMessagesLoading, selectedUser}= useChatStore();
-  const {authUser}= useChatStore();
+  const { messages, getMessages, isMessageLoading, selectedUser } = useChatStore();
+  const { authUser } = useAuthStore();
 
-  useEffect(()=>{
+  const messageEndRef = useRef(null);
+
+  // ---------------- FIXED USE EFFECT ----------------
+  useEffect(() => {
+    if (!selectedUser?._id) return; // prevent crash on page load
     getMessages(selectedUser._id);
-  },[getMessages, selectedUser._id]);
-  if(isMessagesLoading){
-    return <div className="flex-1 flex flex-col overflow-auto">
-      <ChatHeader />
-      <MessageSkeleton />
-      <MessageInput /> 
-    </div>
+  }, [selectedUser?._id]); // only key dependency
+  // --------------------------------------------------
+
+  if (!selectedUser) {
+    return (
+      <div className="flex-1 flex items-center justify-center text-zinc-500">
+        Select a user to start chatting
+      </div>
+    );
   }
 
-  return (
-   <div className="flex-1 flex flex-col overflow-auto">
-    <ChatHeader />
- <div className="flex-1 overflow-y-auto p-4 space-y-4">
+  if (isMessageLoading) {
+    return (
+      <div className="flex-1 flex flex-col overflow-auto">
+        <ChatHeader />
+        <MessageSkeleton />
+        <MessageInput />
+      </div>
+    );
+  }
 
-   {messages.map((message) => (
+  // Make sure messages is always an array
+  const safeMessages = Array.isArray(messages) ? messages : [];
+
+  return (
+    <div className="flex-1 flex flex-col overflow-auto">
+      <ChatHeader />
+
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        {safeMessages.map((message) => (
           <div
             key={message._id}
-            className={`chat ${message.senderId === authUser._id ? "chat-end" : "chat-start"}`}
+            className={`chat ${
+              message.senderId === authUser._id ? "chat-end" : "chat-start"
+            }`}
             ref={messageEndRef}
           >
-            <div className=" chat-image avatar">
+            <div className="chat-image avatar">
               <div className="size-10 rounded-full border">
                 <img
                   src={
@@ -45,11 +66,13 @@ const ChatContainer = () => {
                 />
               </div>
             </div>
+
             <div className="chat-header mb-1">
               <time className="text-xs opacity-50 ml-1">
                 {formatMessageTime(message.createdAt)}
               </time>
             </div>
+
             <div className="chat-bubble flex flex-col">
               {message.image && (
                 <img
@@ -58,16 +81,16 @@ const ChatContainer = () => {
                   className="sm:max-w-[200px] rounded-md mb-2"
                 />
               )}
+
               {message.text && <p>{message.text}</p>}
             </div>
           </div>
         ))}
       </div>
 
-    
-    <MessageInput />
+      <MessageInput />
     </div>
-  )
-}
+  );
+};
 
-export default ChatContainer
+export default ChatContainer;
