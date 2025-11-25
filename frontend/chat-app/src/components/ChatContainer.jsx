@@ -13,7 +13,7 @@ const ChatContainer = () => {
 
   const messageEndRef = useRef(null);
 
-  // ---------------- FIXED USE EFFECT ----------------
+  
   useEffect(() => {
     if (!selectedUser?._id) return; // prevent crash on page load
     getMessages(selectedUser._id);
