@@ -52,7 +52,8 @@ const SettingPage = () => {
         {/* Preview Section */}
         <h3 className="text-lg font-semibold mb-3">Preview</h3>
 
-        <div className="rounded-xl border border-base-300 overflow-hidden shadow-lg">
+        <div className="rounded-xl border border-base-300 overflow-hidden shadow-lg" data-theme={theme}>
+
           {/* Header */}
           <div className="p-4">
             <div className="max-w-lg mx-auto">
