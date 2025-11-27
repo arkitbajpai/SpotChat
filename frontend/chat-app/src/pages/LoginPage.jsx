@@ -1,26 +1,24 @@
-import React from 'react'
-import { useState } from 'react';
-import {  Eye, EyeOff, Loader2, Lock, Mail, MessageSquare, User  } from 'lucide-react';
-import {useAuthStore}from '../store/useAuthStore';
+import { useState } from "react";
+import { useAuthStore } from "../store/useAuthStore";
+import AuthImagePattern from "../components/AuthImagePattern";
 import { Link } from "react-router-dom";
-import AuthImagePattern from '../components/AuthImagePattern.jsx';
-import toast from 'react-hot-toast';
+import { Eye, EyeOff, Loader2, Lock, Mail, MessageSquare } from "lucide-react";
 
 const LoginPage = () => {
-  const [showPassword,setShowPassword]=useState(false);
-  const [formData,setFormData]=useState({
-    email:'',
-    password:''
+  const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
   });
+  const { login, isLoggingIn } = useAuthStore();
 
-  const{login, isLoggingIn}= useAuthStore();
-  const handleSubmit =async(e)=>{
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    await login (formData);
-  }
+    login(formData);
+  };
 
   return (
-<div className="h-screen grid lg:grid-cols-2">
+    <div className="h-screen grid lg:grid-cols-2">
       {/* Left Side - Form */}
       <div className="flex flex-col justify-center items-center p-6 sm:p-12">
         <div className="w-full max-w-md space-y-8">

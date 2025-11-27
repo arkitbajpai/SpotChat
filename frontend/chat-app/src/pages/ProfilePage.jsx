@@ -13,7 +13,7 @@ const handleImageUpload=async(e)=>{
   reader.onloadend= async()=>{
     const base64data= reader.result;
     setSelectedImg(base64data);
-    await updateProfile({profilePic:base64data});
+    await updateProfile({profilepic:base64data});
   }
 }
   return (
