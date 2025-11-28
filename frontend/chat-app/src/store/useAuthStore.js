@@ -1,20 +1,22 @@
 import {create} from 'zustand';
 import { axiosInstance } from '../lib/axios';
 import { toast } from 'react-hot-toast';
+import { Socket } from 'socket.io-client';
 //import { updateProfile } from '../../../../backend/src/controllers/auth.controller';
 //import { login, logout } from '../../../../backend/src/controllers/auth.controller';
 
-export const useAuthStore=create((set)=>({
+export const useAuthStore=create((set,get)=>({
     authUser:null,
     isSigningUp:false,
     isLoggingIn:false,
     isUpdatingProfile:false,
     isCheckingAuth:true,
     onlineUsers:[],
+    Socket:null,
 
     checkAuth:async()=>{
         try{
-            
+
             const res= await axiosInstance.get('/auth/check');
          set({authUser:res.data});
         }
@@ -41,12 +43,15 @@ export const useAuthStore=create((set)=>({
             set({isSigningUp:false});
         }
     },
+
     login:async(data)=>{
         set({isLoggingIn:true});
         try{
             const res= await axiosInstance.post('/auth/login',data);
             set({authUser:res.data});
             toast.success("Login successful");
+
+            get().connectSocket();
         }   catch(err){
             console.log(err);
             toast.error(err.response?.data?.message || "Something went wrong");
@@ -83,6 +88,11 @@ export const useAuthStore=create((set)=>({
             set({isUpdatingProfile:false});
         }
     },
+
+
+    connectSocket: () => {
+
+    }
 
     
 
