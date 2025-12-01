@@ -61,7 +61,7 @@ export const useChatStore = create((set, get) => ({
 
         } catch (err) {
             toast.error("Failed to send message");
-            console.log("sendMessage error in chatStore:", err);
+            console.log("sendMessage error :", err);
         }
    
     }
