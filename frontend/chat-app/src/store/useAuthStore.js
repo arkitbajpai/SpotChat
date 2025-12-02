@@ -103,7 +103,11 @@ export const useAuthStore=create((set,get)=>({
         socket.connect();
         set({socket:socket});
 
-    },
+        socket.on("get-online-users",(usersIds)=>{
+            set({onlineUsers:usersIds});
+        });
+
+    },  
 
     disconnectSocket: () => {
         if(get().socket){
