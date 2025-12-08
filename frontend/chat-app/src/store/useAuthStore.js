@@ -81,7 +81,7 @@ export const useAuthStore=create((set,get)=>({
             set({
                 authUser:res.data 
             });
-            toast.success("Profile updated successfully kods!");
+            toast.success("Profile updated successfully ");
 
         } catch(err){
             console.log(err);
