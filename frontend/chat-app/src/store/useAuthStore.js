@@ -85,7 +85,7 @@ export const useAuthStore=create((set,get)=>({
 
         } catch(err){
             console.log(err);
-            toast.error(err.response?.data?.message || "Something went wrong at updating profile in chatstore");
+            toast.error(err.response?.data?.message || "Something went wrong at updating profile in chatstore sorry ");
         } finally{
             set({isUpdatingProfile:false});
         }
