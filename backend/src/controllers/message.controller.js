@@ -50,6 +50,10 @@ export const sendMessage= async(req,res)=>{
             image:imageUrl,
         });
         await newMessage.save();
+        const recevierSocketId= getRecevierSocketId(receiverId);
+        if(recevierSocketId){
+            io.to(recevierSocketId).emit("newMessage",newMessage);
+        }
         res.status(200).json({message:newMessage});
 
 
