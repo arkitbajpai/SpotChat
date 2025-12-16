@@ -14,7 +14,7 @@ const ChatContainer = () => {
   const messageEndRef = useRef(null);
 
 useEffect(() => {
-  getMessages(selectedUser._id);
+  getMessages(selectedUser?._id);
   subscribeToNewMessages();
   return () => {
     unsubscribeFromNewMessages();

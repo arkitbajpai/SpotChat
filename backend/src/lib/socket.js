@@ -13,22 +13,23 @@ const io=new Server(server,{
     }
 });
 
+const userSocketMap={};
 
 export function getRecevierSocketId(userId){
     return userSocketMap[userId];
 
 }
 //use to store online users
-const userSocketMap={};
 
 
 
 io.on("connection",(socket)=>{
     console.log('New client connected',socket.id);
-    const {userId}= socket.handshake.query.userId;
+    const userId= socket.handshake.query.userId;
     if(userId){
         userSocketMap[userId]=socket.id;
     }
+    console.log('Online users:',userSocketMap);
     io.emit("getOnlineUsers",Object.keys(userSocketMap))
     socket.on('disconnect',()=>{
         console.log('Client disconnected',socket.id);
