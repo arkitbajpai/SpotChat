@@ -2,8 +2,7 @@ import {create} from 'zustand';
 import { axiosInstance } from '../lib/axios';
 import { toast } from 'react-hot-toast';
 import { Socket } from 'socket.io-client';
-//import { updateProfile } from '../../../../backend/src/controllers/auth.controller';
-//import { login, logout } from '../../../../backend/src/controllers/auth.controller';
+
 import { io } from 'socket.io-client';
 const baseURL='http://localhost:5001';
 export const useAuthStore=create((set,get)=>({
@@ -94,7 +93,7 @@ export const useAuthStore=create((set,get)=>({
 
     connectSocket: () => {
         const {authUser}= get();
-        if(!authUser||get.socket?.connected){
+        if(!authUser||get().socket?.connected){
         return;
         }
         const socket = io(baseURL,{
