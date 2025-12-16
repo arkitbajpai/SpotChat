@@ -8,25 +8,32 @@ import MessageSkeleton from "./skeletons/MessageSkeleton";
 import { formatMessageTime } from "../lib/utils";
 
 const ChatContainer = () => {
-  const { messages, getMessages, isMessageLoading, selectedUser } = useChatStore();
+  const { messages, getMessages, isMessageLoading, selectedUser,unsubscribeFromNewMessages,subscribeToNewMessages } = useChatStore();
   const { authUser } = useAuthStore();
 
   const messageEndRef = useRef(null);
 
-  
-  useEffect(() => {
-    if (!selectedUser?._id) return; // prevent crash on page load
-    getMessages(selectedUser._id);
-  }, [selectedUser?._id]); // only key dependency
-  // --------------------------------------------------
-
-  if (!selectedUser) {
-    return (
-      <div className="flex-1 flex items-center justify-center text-zinc-500">
-        Select a user to start chatting
-      </div>
-    );
+useEffect(() => {
+  getMessages(selectedUser._id);
+  subscribeToNewMessages();
+  return () => {
+    unsubscribeFromNewMessages();
   }
+}, [selectedUser._id,getMessages,subscribeToNewMessages,unsubscribeFromNewMessages]);
+  
+  // useEffect(() => {
+  //   if (!selectedUser?._id) return; // prevent crash on page load
+  //   getMessages(selectedUser._id);
+  // }, [selectedUser?._id]); // only key dependency
+  // // --------------------------------------------------
+
+  // if (!selectedUser) {
+  //   return (
+  //     <div className="flex-1 flex items-center justify-center text-zinc-500">
+  //       Select a user to start chatting
+  //     </div>
+  //   );
+  // }
 
   if (isMessageLoading) {
     return (
