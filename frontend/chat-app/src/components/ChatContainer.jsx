@@ -34,7 +34,12 @@ useEffect(() => {
   //     </div>
   //   );
   // }
+ useEffect(() => {
+  if(messageEndRef.current&&messages){
+    messageEndRef.current.scrollIntoView({behavior:"smooth"});
+  }
 
+ }, [messages]);
   if (isMessageLoading) {
     return (
       <div className="flex-1 flex flex-col overflow-auto">
