@@ -1,15 +1,6 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-@layer base {
-  html,
-  body,
-  #root {
-    height: 100%;
-  }
+@import "tailwindcss";
 
-  body {
-    background-color: hsl(var(--b1));
-    color: hsl(var(--bc));
-  }
-}
+
+/* @plugin "daisyui"; */
+
+
