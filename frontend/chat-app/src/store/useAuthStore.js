@@ -104,15 +104,15 @@ export const useAuthStore = create((set, get) => ({
 
     // ✅ DEBUG LOGS (keep for now)
     newSocket.on("connect", () => {
-      console.log("✅ Socket connected:", newSocket.id);
+      console.log("Socket connected:", newSocket.id);
     });
 
     newSocket.on("disconnect", (reason) => {
-      console.log("❌ Socket disconnected:", reason);
+      console.log("Socket disconnected:", reason);
     });
 
     newSocket.on("getOnlineUsers", (userIds) => {
-      console.log("🟢 Online users:", userIds);
+      console.log("Online users:", userIds);
       set({ onlineUsers: userIds });
     });
 
