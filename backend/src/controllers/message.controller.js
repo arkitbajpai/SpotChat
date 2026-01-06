@@ -20,6 +20,10 @@ export const getMessages= async(req,res)=>{
         const myId= req.user._id;
 
        // const senderId=req.user._id;
+       const me = await User.findById(myId).select("-password");
+       if(!me.friends.includes(userToChatId)){
+        return res.status(403).json({message:"You are not friends with this user"});
+       }
         const messages= await Message.find({
             $or:[
                 {senderId:myId,receiverId:userToChatId},
@@ -39,6 +43,12 @@ export const sendMessage= async(req,res)=>{
         const senderId=req.user._id;
         const {text,image}= req.body;
         let imageUrl;
+
+         const sender = await User.findById(senderId);
+    if (!sender.friends.includes(receiverId)) {
+      return res.status(403).json({ message: "Not friends" });
+    }
+    
         if(image){
             const uploadedImage= await cloudinary.uploader.upload(image,{
                 folder:"chat-app",
