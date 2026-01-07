@@ -1,11 +1,11 @@
 import express from 'express';
-import protectedRoute from '../middleware/auth.middleware.js';
+import {protectRoute} from '../middleware/auth.middleware.js';
 import {sendFriendRequest, respondToFriendRequest,getFriendRequests} from '../controllers/user.controller.js';
 
 const  router=express.Router();
 
 
-router.post('/request/:userId',protectedRoute,sendFriendRequest);
+router.post('/request/:userId',protectRoute,sendFriendRequest);
 export default router;
 
 router.post(
