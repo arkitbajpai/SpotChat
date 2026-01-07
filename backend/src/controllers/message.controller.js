@@ -7,8 +7,14 @@ import {getRecevierSocketId} from "../lib/socket.js";
 export const getUsersForSidebar= async(req,res)=>{
     try{
         const loggedInUserId= req.user._id;
-        const filteredUsers=await User.find({_id:{$ne:loggedInUserId}}).select("-password");
-        res.status(200).json({users:filteredUsers});
+        const me = await User.findById(loggedInUserId).populate("friends","-password");
+        if(!me){
+            return res.status(404).json({message:"User not found"});
+        }
+        //const filteredUsers=await me.find({_id:{$ne:loggedInUserId}}).select("-password");
+         const filteredFriends = me.friends.filter(Boolean);
+
+    res.status(200).json({ users: filteredFriends });
     }
     catch(err){
         res.status(500).json({message:"Internal server error"});
@@ -48,7 +54,7 @@ export const sendMessage= async(req,res)=>{
     if (!sender.friends.includes(receiverId)) {
       return res.status(403).json({ message: "Not friends" });
     }
-    
+
         if(image){
             const uploadedImage= await cloudinary.uploader.upload(image,{
                 folder:"chat-app",
