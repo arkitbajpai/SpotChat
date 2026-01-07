@@ -1,10 +1,14 @@
 import React from 'react'
+import {useState} from 'react';
 import { Link } from "react-router-dom";
 import {useAuthStore}  from '../store/useAuthStore.js';
-import { LogOut, MessageSquare, Settings, User } from "lucide-react";
+import { LogOut, MessageSquare, Settings, User, Users } from "lucide-react";
+import FriendsPanel from './FriendsPanel.jsx';
 
 const Navbar = () => {
   const {logout, authUser} = useAuthStore();
+  const [showFriends, setShowFriends] = useState(false);
+
 
   return (
     <header
@@ -35,7 +39,15 @@ const Navbar = () => {
             </Link>
 
             {authUser && (
-              <>
+               <>
+               <button
+                  onClick={() => setShowFriends(true)}
+                  className="btn btn-sm gap-2"
+                >
+                  <Users className="w-4 h-4" />
+                  <span className="hidden sm:inline">Friends</span>
+                </button>
+
                 <Link to="/profile" className="btn btn-sm gap-2">
                   <User className="size-5" />
                   <span className="hidden sm:inline">Profile</span>

@@ -2,3 +2,17 @@
 @plugin "daisyui" {
   themes: all;
 }
+.friend-requests {
+  padding: 10px;
+}
+
+.request-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.actions button {
+  margin-left: 5px;
+}
