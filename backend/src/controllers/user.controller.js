@@ -86,3 +86,14 @@ export const getFriendRequests=async(req,res)=>{
         res.status(500).json({message:"Internal server error"});
     }
 }
+export const searchUsers = async (req, res) => {
+  const myId = req.user._id;
+  const { query } = req.query;
+
+  const users = await User.find({
+    _id: { $ne: myId },
+    fullName: { $regex: query, $options: "i" },
+  }).select("fullName profilePic");
+
+  res.json({ users });
+};
