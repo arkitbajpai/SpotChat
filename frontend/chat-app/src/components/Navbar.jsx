@@ -40,13 +40,11 @@ const Navbar = () => {
 
             {authUser && (
                <>
-               <button
-                  onClick={() => setShowFriends(true)}
-                  className="btn btn-sm gap-2"
-                >
-                  <Users className="w-4 h-4" />
-                  <span className="hidden sm:inline">Friends</span>
-                </button>
+              <Link to="/friends" className="btn btn-sm gap-2">
+                <Users className="w-4 h-4" />
+                 <span className="hidden sm:inline">Friends</span>
+                  </Link>
+
 
                 <Link to="/profile" className="btn btn-sm gap-2">
                   <User className="size-5" />
