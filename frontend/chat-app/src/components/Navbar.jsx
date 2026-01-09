@@ -42,7 +42,7 @@ const Navbar = () => {
                <>
               <Link to="/friends" className="btn btn-sm gap-2">
                 <Users className="w-4 h-4" />
-                 <span className="hidden sm:inline">Friends</span>
+                 <span className="hidden sm:inline">Friend</span>
                   </Link>
 
 
