@@ -1,45 +1,48 @@
 import { useEffect, useState } from "react";
 import {
-    getFriendRequests,
-    respondToFriendRequest,
+  getFriendRequests,
+  respondToFriendRequest,
 } from "../lib/userApi.js";
-import { useAuthStore } from "../store/useAuthStore.js";
 import { toast } from "react-hot-toast";
 
 const FriendRequests = () => {
-    const [ requests, setRequests ] = useState([]);
-    const [ loading, setLoading ] = useState(true);
-    
-    useEffect(() => {
-        const fetchRequests = async () => {
-            try{
-                const data = await getFriendRequests();
-                setRequests(data);
-            } catch(err){
-                toast.error("Failed to load friend requests");
-            } finally {
-                setLoading(false);
-            }
+  const [requests, setRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-        } ;
-        fetchRequests();
-    }, []);
-
-    const handleRespond = async (userId, action) => {
-        try{
-            await respondToFriendRequest(userId, action);
-            setRequests((prevRequests) =>
-                prevRequests.filter((req) => req.from._id !== userId)
-            );
-            toast.success(`Friend request ${action}ed`);    
-        } catch(err){
-            toast.error("Failed to respond to friend request");
-        }
+  useEffect(() => {
+    const fetchRequests = async () => {
+      try {
+        const data = await getFriendRequests(); // MUST be array
+        setRequests(data);
+      } catch (err) {
+        toast.error("Failed to load friend requests");
+      } finally {
+        setLoading(false);
+      }
     };
-    if (loading) {
-        return <div>Loading friend requests...</div>;
+
+    fetchRequests();
+  }, []);
+
+  const handleRespond = async (userId, action) => {
+    try {
+      await respondToFriendRequest(userId, action);
+
+      setRequests((prevRequests) =>
+        prevRequests.filter((req) => req.from._id !== userId)
+      );
+
+      toast.success(`Friend request ${action}ed`);
+    } catch (err) {
+      toast.error("Failed to respond to friend request");
     }
-    return (
+  };
+
+  if (loading) {
+    return <div>Loading friend requests...</div>;
+  }
+
+  return (
     <div className="friend-requests">
       <h3>Friend Requests</h3>
 
@@ -50,7 +53,7 @@ const FriendRequests = () => {
           <div key={req.from._id} className="request-card">
             <img
               src={req.from.profilePic || "/avatar.png"}
-              alt=""
+              alt="profile"
               className="avatar"
             />
             <span>{req.from.fullName}</span>
@@ -58,14 +61,15 @@ const FriendRequests = () => {
             <div className="actions">
               <button
                 onClick={() =>
-                  handleAction(req.from._id, "accept")
+                  handleRespond(req.from._id, "accept")
                 }
               >
                 Accept
               </button>
+
               <button
                 onClick={() =>
-                  handleAction(req.from._id, "reject")
+                  handleRespond(req.from._id, "reject")
                 }
               >
                 Reject
@@ -76,6 +80,6 @@ const FriendRequests = () => {
       )}
     </div>
   );
+};
 
-}
 export default FriendRequests;
