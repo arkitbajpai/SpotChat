@@ -6,21 +6,35 @@ const AddFriend = () => {
   const [users, setUsers] = useState([]);
 
   const searchUsers = async () => {
+    if (!query.trim()) return;
+
     try {
       const res = await axios.get(
-        `/api/users/search?query=${query}`
+        `/api/users/search?query=${query}`,
+        { withCredentials: true } // ✅ REQUIRED
       );
-      setUsers(res.data.users);
+
+      // ✅ ALWAYS extract array safely
+      setUsers(res.data.users || []);
     } catch (err) {
-      console.error(err);
+      console.error("Search failed", err);
+      setUsers([]); // ✅ prevent crash
     }
   };
 
   const sendRequest = async (userId) => {
-    await axios.post(`/api/users/request/${userId}`);
-    setUsers((prev) =>
-      prev.filter((u) => u._id !== userId)
-    );
+    try {
+      await axios.post(
+        `/api/users/request/${userId}`,
+        {},
+        { withCredentials: true } // ✅ REQUIRED
+      );
+
+      // remove user from list after request
+      setUsers((prev) => prev.filter((u) => u._id !== userId));
+    } catch (err) {
+      console.error("Failed to send request", err);
+    }
   };
 
   return (
@@ -30,16 +44,21 @@ const AddFriend = () => {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
       />
+
       <button onClick={searchUsers}>Search</button>
 
-      {users.map((user) => (
-        <div key={user._id} className="user-row">
-          <span>{user.fullName}</span>
-          <button onClick={() => sendRequest(user._id)}>
-            Add
-          </button>
-        </div>
-      ))}
+      {users.length === 0 ? (
+        <p>No users found</p>
+      ) : (
+        users.map((user) => (
+          <div key={user._id} className="user-row">
+            <span>{user.fullName}</span>
+            <button onClick={() => sendRequest(user._id)}>
+              Add
+            </button>
+          </div>
+        ))
+      )}
     </div>
   );
 };

@@ -13,8 +13,6 @@ const FriendRequests = () => {
     const fetchRequests = async () => {
       try {
         const data = await getFriendRequests(); // MUST be array
-        console.log("getFriendRequests() returned:", data);
-      console.log("Is array?", Array.isArray(data));
         setRequests(data);
       } catch (err) {
         toast.error("Failed to load friend requests");
