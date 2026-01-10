@@ -1,10 +1,18 @@
-import axios from 'axios';
+import axios from "axios";
 
-export const getFriendRequests=async()=>{
- const response=await axios.get('/api/users/requests');
- return response.data;
+export const getFriendRequests = async () => {
+  const response = await axios.get(
+    "/api/users/requests",
+    { withCredentials: true } // ✅ IMPORTANT
+  );
 
-}
-export const respondToFriendRequest=async(userId,action)=>{
-   await axios.post(`/api/users/respond/${userId}`,{action});
-}
+  return response.data.requests || [];
+};
+
+export const respondToFriendRequest = async (userId, action) => {
+  await axios.post(
+    `/api/users/respond/${userId}`,
+    { action },
+    { withCredentials: true } // ✅ IMPORTANT
+  );
+};
