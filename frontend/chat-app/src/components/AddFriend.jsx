@@ -1,38 +1,26 @@
 import { useState } from "react";
-import axios from "axios";
+//import api from "../lib/api"; // ✅ USE YOUR SINGLE API INSTANCE
+//import axios from "axios";
+import {axiosInstance} from "../lib/axios";
 
 const AddFriend = () => {
   const [query, setQuery] = useState("");
   const [users, setUsers] = useState([]);
 
   const searchUsers = async () => {
-    if (!query.trim()) return;
-    console.log("Search clicked, query:", query);
-
     try {
-      const res = await axios.get(
-        `/api/users/search?query=${query}`,
-        { withCredentials: true } // ✅ REQUIRED
-      );
-       console.log("Search API response:", res.data);
-
-      // ✅ ALWAYS extract array safely
+      const res = await axiosInstance.get(`/users/search?query=${query}`);
+      console.log("UI received:", res.data);
       setUsers(res.data.users || []);
     } catch (err) {
       console.error("Search failed", err);
-      setUsers([]); // ✅ prevent crash
+      setUsers([]);
     }
   };
 
   const sendRequest = async (userId) => {
     try {
-      await axios.post(
-        `/api/users/request/${userId}`,
-        {},
-        { withCredentials: true } // ✅ REQUIRED
-      );
-
-      // remove user from list after request
+      await api.post(`/users/request/${userId}`);
       setUsers((prev) => prev.filter((u) => u._id !== userId));
     } catch (err) {
       console.error("Failed to send request", err);
