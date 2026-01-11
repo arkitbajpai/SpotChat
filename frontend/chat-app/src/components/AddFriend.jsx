@@ -7,12 +7,14 @@ const AddFriend = () => {
 
   const searchUsers = async () => {
     if (!query.trim()) return;
+    console.log("Search clicked, query:", query);
 
     try {
       const res = await axios.get(
         `/api/users/search?query=${query}`,
         { withCredentials: true } // ✅ REQUIRED
       );
+       console.log("Search API response:", res.data);
 
       // ✅ ALWAYS extract array safely
       setUsers(res.data.users || []);
