@@ -24,15 +24,15 @@ export function getRecevierSocketId(userId){
 
 
 io.on("connection",(socket)=>{
-    console.log('New client connected',socket.id);
+    //console.log('New client connected',socket.id);
     const userId= socket.handshake.query.userId;
     if(userId){
         userSocketMap[userId]=socket.id;
     }
-    console.log('Online users:',userSocketMap);
+    //console.log('Online users:',userSocketMap);
     io.emit("getOnlineUsers",Object.keys(userSocketMap))
     socket.on('disconnect',()=>{
-        console.log('Client disconnected',socket.id);
+        //console.log('Client disconnected',socket.id);
         delete userSocketMap[userId];
         io.emit("getOnlineUsers",Object.keys(userSocketMap))
     });
