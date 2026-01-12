@@ -11,7 +11,7 @@ export const getFriendRequests = async () => {
 
 export const respondToFriendRequest = async (userId, action) => {
   await axiosInstance.post(
-    `/api/users/respond/${userId}`,
+    `/users/respond/${userId}`,
     { action },
     { withCredentials: true } // ✅ IMPORTANT
   );
