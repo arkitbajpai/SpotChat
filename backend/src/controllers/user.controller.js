@@ -72,7 +72,9 @@ export const respondToFriendRequest=async(req,res)=>{
 export const getFriendRequests=async(req,res)=>{
     try{
         const myId=req.user._id;
-        const me = await User.findById(myId).populate("friendRequests.from","-password","email fullName profilePic");
+       const me = await User.findById(myId).populate(
+      "friendRequests.from",
+      "fullName email profilePic");
      
         const pendingRequests = me.friendRequests.filter(
             (req)=> req.status==="pending"
@@ -83,6 +85,7 @@ export const getFriendRequests=async(req,res)=>{
         )
     }
     catch(error){
+       console.error("getFriendRequests error:", error);
         res.status(500).json({message:"Internal server error"});
     }
 }

@@ -10,19 +10,23 @@ const FriendRequests = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchRequests = async () => {
-      try {
-        const data = await getFriendRequests(); // MUST be array
-        setRequests(data);
-      } catch (err) {
-        toast.error("Failed to load friend requests");
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchRequests = async () => {
+    try {
+      const data = await getFriendRequests();
 
-    fetchRequests();
-  }, []);
+      console.log("Friend requests received in UI:", requests);
+      console.log("Is array?", Array.isArray(requests));
+
+      setRequests(Array.isArray(data) ? data : []);
+    } catch (err) {
+      toast.error("Failed to load friend requests");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchRequests();
+}, []);
 
   const handleRespond = async (userId, action) => {
     try {

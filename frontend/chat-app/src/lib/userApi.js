@@ -1,16 +1,16 @@
-import axios from "axios";
+import { axiosInstance } from "./axios";
 
 export const getFriendRequests = async () => {
-  const response = await axios.get(
-    "/api/users/requests",
+  const response = await axiosInstance.get(
+    "/users/requests",
     { withCredentials: true } // ✅ IMPORTANT
   );
-
-  return response.data.requests || [];
+ //console.log("RAW API RESPONSE:", response.data);
+  return response.data.friendRequests;
 };
 
 export const respondToFriendRequest = async (userId, action) => {
-  await axios.post(
+  await axiosInstance.post(
     `/api/users/respond/${userId}`,
     { action },
     { withCredentials: true } // ✅ IMPORTANT
