@@ -50,38 +50,58 @@ const FriendRequests = () => {
     <div className="friend-requests">
       <h3>Friend Requests</h3>
 
-      {requests.length === 0 ? (
-        <p>No pending requests</p>
-      ) : (
-        requests.map((req) => (
-          <div key={req.from._id} className="request-card">
-            <img
-              src={req.from.profilePic || "/avatar.png"}
-              alt="profile"
-              className="avatar"
-            />
-            <span>{req.from.fullName}</span>
+      {requests?.length === 0 ? (
+  <p className="opacity-60">No pending requests</p>
+) : (
+  <div className="space-y-3">
+    {requests.map((req) => (
+      <div
+        key={req._id}
+        className="flex items-center justify-between p-4 rounded-lg bg-base-200 hover:bg-base-300 transition"
+      >
+        {/* Left: Avatar + Info */}
+        <div className="flex items-center gap-3">
+          <img
+            src={req.from.profilePic || "/avatar.png"}
+            alt="profile"
+            className="w-11 h-11 rounded-full object-cover"
+          />
 
-            <div className="actions">
-              <button
-                onClick={() =>
-                  handleRespond(req.from._id, "accept")
-                }
-              >
-                Accept
-              </button>
-
-              <button
-                onClick={() =>
-                  handleRespond(req.from._id, "reject")
-                }
-              >
-                Reject
-              </button>
-            </div>
+          <div>
+            <p className="font-semibold leading-tight">
+              {req.from.fullName}
+            </p>
+            <p className="text-xs opacity-70">
+              wants to be your friend
+            </p>
           </div>
-        ))
-      )}
+        </div>
+
+        {/* Right: Actions */}
+        <div className="flex gap-2">
+          <button
+            className="btn btn-sm btn-success"
+            onClick={() =>
+              handleRespond(req.from._id, "accept")
+            }
+          >
+            Accept
+          </button>
+
+          <button
+            className="btn btn-sm btn-error btn-outline"
+            onClick={() =>
+              handleRespond(req.from._id, "reject")
+            }
+          >
+            Reject
+          </button>
+        </div>
+      </div>
+    ))}
+  </div>
+)}
+
     </div>
   );
 };

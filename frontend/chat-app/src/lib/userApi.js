@@ -16,3 +16,9 @@ export const respondToFriendRequest = async (userId, action) => {
     { withCredentials: true } // ✅ IMPORTANT
   );
 };
+export const removeFriend = async (userId) => {
+  await axiosInstance.delete(
+    `/users/friends/${userId}`,
+    { withCredentials: true } // ✅ IMPORTANT
+  );
+}

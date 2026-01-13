@@ -100,3 +100,19 @@ export const searchUsers = async (req, res) => {
 
   res.json({ users });
 };
+export const removeFriend=async(req,res)=>{
+  try{
+    const myId = req.user._id;
+    const friendsId= req.params.userId;
+    await User.findByIdAndUpdate(myId,{
+      $pull:{friends:friendsId}
+    });
+    await User.findByIdAndUpdate(friendsId,{
+      $pull:{friends:myId}
+    });
+    res.status(200).json({message:"Friend removed successfully"});
+
+  }catch(error){
+    res.status(500).json({message:"Internal server error at remove friend"});
+  }
+}
