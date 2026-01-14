@@ -116,7 +116,7 @@ export const removeFriend=async(req,res)=>{
         {sender:friendsId,receiver:myId}
       ]
     });
-    res.status(200).json({message:"Friend removed successfully"});
+    res.status(200).json({message:"Friend removed successfully kodos"});
 
   }catch(error){
     res.status(500).json({message:"Internal server error at remove friend"});
