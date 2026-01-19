@@ -21,3 +21,29 @@ export const createRoom=async(req,res)=>{
 
     }
 }
+
+
+
+export const gerNearbyRooms=async(req,res)=>{
+    try{
+        const {latitude, longitude} = req.query;
+        if(!latitude || !longitude){
+            return res.status(400).json({message:'Latitude and Longitude are required'});
+        }
+        const rooms = await Rooms.find({
+            location: {
+                $near: {
+                    $geometry: {
+                        type: 'Point',
+                        coordinates: [parseFloat(longitude), parseFloat(latitude)],
+                    },
+                    $maxDistance: 5000, // 5 km radius
+                },
+            },
+            expiresAt: {$gt: new Date()},
+        });
+        return res.status(200).json(rooms);
+    } catch(error){
+        
+    }
+}
