@@ -47,3 +47,33 @@ export const gerNearbyRooms=async(req,res)=>{
         
     }
 }
+export const joinRoom = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { roomId } = req.params;
+
+    const room = await Room.findById(roomId);
+
+    if (!room) {
+      return res.status(404).json({ message: "Room not found" });
+    }
+
+    // ❌ expired room
+    if (room.expiresAt < new Date()) {
+      return res.status(400).json({ message: "Room expired" });
+    }
+
+    // ❌ already joined
+    if (room.members.includes(userId)) {
+      return res.status(400).json({ message: "Already joined" });
+    }
+
+    room.members.push(userId);
+    await room.save();
+
+    res.status(200).json({ message: "Joined room successfully" });
+  } catch (error) {
+    console.error("Join room error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
