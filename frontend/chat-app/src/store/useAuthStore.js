@@ -20,7 +20,7 @@ export const useAuthStore = create((set, get) => ({
       const res = await axiosInstance.get("/auth/check");
       set({ authUser: res.data });
 
-      // ✅ VERY IMPORTANT: connect socket after auth
+      
       get().connectSocket();
     } catch (err) {
       set({ authUser: null });
@@ -35,7 +35,7 @@ export const useAuthStore = create((set, get) => ({
     try {
       const res = await axiosInstance.post("/auth/signup", data);
       set({ authUser: res.data });
-      toast.success("Signup successful congrats!");
+      toast.success("Signup successful congrats");
 
       get().connectSocket();
     } catch (err) {
@@ -95,24 +95,17 @@ export const useAuthStore = create((set, get) => ({
     if (!authUser || socket?.connected) return;
 
     const newSocket = io(baseURL, {
-      withCredentials: true,        // ✅ SEND COOKIES
-      transports: ["websocket"],    // ✅ STABLE TRANSPORT
+      withCredentials: true,        
+      transports: ["websocket"],    
       query: {
-        userId: authUser._id,       // ✅ BACKEND MAPS THIS
+        userId: authUser._id,       
       },
     });
 
-    // ✅ DEBUG LOGS (keep for now)
-    // newSocket.on("connect", () => {
-    //   console.log("Socket connected:", newSocket.id);
-    // });
-
-    // newSocket.on("disconnect", (reason) => {
-    //   console.log("Socket disconnected:", reason);
-    // });
+    
 
     newSocket.on("getOnlineUsers", (userIds) => {
-     // console.log("Online users:", userIds);
+     
       set({ onlineUsers: userIds });
     });
 
