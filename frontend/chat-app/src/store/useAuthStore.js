@@ -81,7 +81,7 @@ export const useAuthStore = create((set, get) => ({
       set({ authUser: res.data });
       toast.success("Profile updated");
     } catch (err) {
-      toast.error("Profile update failed");
+      toast.error("Profile update failed sorry");
     } finally {
       set({ isUpdatingProfile: false });
     }
@@ -91,7 +91,7 @@ export const useAuthStore = create((set, get) => ({
   connectSocket: () => {
     const { authUser, socket } = get();
 
-    // prevent duplicate connections
+    
     if (!authUser || socket?.connected) return;
 
     const newSocket = io(baseURL, {
@@ -112,7 +112,7 @@ export const useAuthStore = create((set, get) => ({
     set({ socket: newSocket });
   },
 
-  // ---------------- DISCONNECT SOCKET ----------------
+  
   disconnectSocket: () => {
     const socket = get().socket;
     if (socket) socket.disconnect();
