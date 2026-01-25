@@ -52,18 +52,16 @@ export const joinRoom = async (req, res) => {
     const userId = req.user._id;
     const { roomId } = req.params;
 
-    const room = await Room.findById(roomId);
+    const room = await Rooms.findById(roomId);
 
     if (!room) {
       return res.status(404).json({ message: "Room not found" });
     }
 
-    // ❌ expired room
     if (room.expiresAt < new Date()) {
       return res.status(400).json({ message: "Room expired" });
     }
 
-    // ❌ already joined
     if (room.members.includes(userId)) {
       return res.status(400).json({ message: "Already joined" });
     }
@@ -77,3 +75,24 @@ export const joinRoom = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+export const leaveRoom = async(req,res)=>{
+    try{
+        const userId = req.user._id;
+        const {roomId} = req.params;
+        const room = await Rooms.findById(roomId);
+        if(!room){
+            return res.status(404).json({message:'Room not found'});
+        }
+        if(!room.members.includes(userId)){
+            return res.status(400).json({message:'Not a member of the room'});
+        }
+        room.members = room.members.filter(memberId => memberId.toString() !== userId.toString());
+        await room.save();
+        return res.status(200).json({message:'Left room successfully'});
+    }
+    catch(error){
+        console.error('Leave room error:', error);
+        return res.status(500).json({message:'Internal server error'});
+
+    }
+}
