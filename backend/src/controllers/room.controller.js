@@ -17,7 +17,7 @@ export const createRoom=async(req,res)=>{
     return res.status(201).json(newRoom);}
     catch(error){
         console.error('Error creating room:', error);
-        return res.status(500).json({message:'Server error at creating room'});
+        return res.status(500).json({message:'Server error at creating room1'});
 
     }
 }
