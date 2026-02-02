@@ -1,13 +1,13 @@
 import express from "express";
 import { protectRoute } from "../middleware/auth.middleware.js";
-import { createRoom,getNearbyRooms,joinRoom,
+import { createRoom,gerNearbyRooms,joinRoom,
   leaveRoom } from "../controllers/room.controller.js";
 
 
 const router = express.Router();
 
 router.post("/", protectRoute, createRoom);
-router.get("/nearby", protectRoute, getNearbyRooms);
+router.get("/nearby", protectRoute, gerNearbyRooms);
 router.post("/:roomId/join", protectRoute, joinRoom);
 router.post("/:roomId/leave", protectRoute, leaveRoom);
 

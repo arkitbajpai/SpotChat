@@ -1,4 +1,4 @@
-import {Rooms} from '../models/rooms.model.js';
+import {Room} from '../models/room.model.js';
 export const createRoom=async(req,res)=>{
     try{ const {name, latitude, longitude, durationHours} = req.body;
        const userId = req.user._id;
@@ -6,7 +6,7 @@ export const createRoom=async(req,res)=>{
         return res.status(400).json({message:'All fields are required'});
     }
     const expiresAt = new Date(Date.now() + durationHours * 60 * 60 * 1000);
-    const newRoom = await Rooms.create({
+    const newRoom = await Room.create({
         createdBy: userId,
         location: {
             type: 'Point',
@@ -30,7 +30,7 @@ export const gerNearbyRooms=async(req,res)=>{
         if(!latitude || !longitude){
             return res.status(400).json({message:'Latitude and Longitude are required'});
         }
-        const rooms = await Rooms.find({
+        const rooms = await Room.find({
             location: {
                 $near: {
                     $geometry: {
@@ -52,7 +52,7 @@ export const joinRoom = async (req, res) => {
     const userId = req.user._id;
     const { roomId } = req.params;
 
-    const room = await Rooms.findById(roomId);
+    const room = await Room.findById(roomId);
 
     if (!room) {
       return res.status(404).json({ message: "Room not found" });
@@ -79,7 +79,7 @@ export const leaveRoom = async(req,res)=>{
     try{
         const userId = req.user._id;
         const {roomId} = req.params;
-        const room = await Rooms.findById(roomId);
+        const room = await Room.findById(roomId);
         if(!room){
             return res.status(404).json({message:'Room not found'});
         }
