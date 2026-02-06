@@ -26,7 +26,7 @@ export const createRoom = async ({
     }),
   });
 
-  if (!res.ok) throw new Error("Failed to create room");
+  if (!res.ok) throw new Error("Failed to create room sorry");
   return res.json();
 };
 
