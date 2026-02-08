@@ -24,29 +24,41 @@ export const createRoom=async(req,res)=>{
 
 
 
-export const gerNearbyRooms=async(req,res)=>{
-    try{
-        const {latitude, longitude} = req.query;
-        if(!latitude || !longitude){
-            return res.status(400).json({message:'Latitude and Longitude are required'});
-        }
-        const rooms = await Room.find({
-            location: {
-                $near: {
-                    $geometry: {
-                        type: 'Point',
-                        coordinates: [parseFloat(longitude), parseFloat(latitude)],
-                    },
-                    $maxDistance: 5000, // 5 km radius
-                },
-            },
-            expiresAt: {$gt: new Date()},
-        });
-        return res.status(200).json(rooms);
-    } catch(error){
-        
+export const gerNearbyRooms = async (req, res) => {
+  try {
+    const { latitude, longitude } = req.query;
+
+    if (!latitude || !longitude) {
+      return res
+        .status(400)
+        .json({ message: "Latitude and Longitude are required" });
     }
+
+    const rooms = await Room.find({
+      location: {
+        $near: {
+          $geometry: {
+            type: "Point",
+            coordinates: [
+              parseFloat(longitude),
+              parseFloat(latitude),
+            ],
+          },
+          $maxDistance: 5000,
+        },
+      },
+      expiresAt: { $gt: new Date() },
+    });
+
+    return res.status(200).json(rooms);
+  } catch (error) {
+    console.error("Get nearby rooms error:", error);
+    return res
+      .status(500)
+      .json({ message: "Failed to fetch nearby rooms" });
+  }
 }
+
 export const joinRoom = async (req, res) => {
   try {
     const userId = req.user._id;
