@@ -1,37 +1,65 @@
-import {Room} from '../models/room.model.js';
-export const createRoom=async(req,res)=>{
-    try{ const {name, latitude, longitude, durationHours} = req.body;
-       const userId = req.user._id;
-    if(!name || !latitude || !longitude || !durationHours){
-        return res.status(400).json({message:'All fields are required'});
+import { Room } from "../models/room.model.js";
+
+/**
+ * CREATE ROOM
+ * POST /api/rooms
+ */
+export const createRoom = async (req, res) => {
+  try {
+    // auth middleware guarantees this, but we still guard
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
     }
-    const expiresAt = new Date(Date.now() + durationHours * 60 * 60 * 1000);
-    const newRoom = await Room.create({
-        createdBy: userId,
-        location: {
-            type: 'Point',
-            coordinates: [longitude, latitude],
-        },
-        expiresAt,
+
+    const { name, latitude, longitude, durationHours } = req.body;
+
+    // Validation
+    if (!name || !latitude || !longitude || !durationHours) {
+      return res.status(400).json({
+        message: "All fields are required (name, latitude, longitude, durationHours)",
+      });
+    }
+
+    const expiresAt = new Date(
+      Date.now() + Number(durationHours) * 60 * 60 * 1000
+    );
+
+    const room = await Room.create({
+      name,
+      createdBy: req.user._id,
+      members: [req.user._id],
+      location: {
+        type: "Point",
+        coordinates: [
+          Number(longitude), // lng first
+          Number(latitude),  // lat second
+        ],
+      },
+      expiresAt,
     });
-    return res.status(201).json(newRoom);}
-    catch(error){
-        console.error('Error creating room:', error);
-        return res.status(500).json({message:'Server error at creating room1'});
 
-    }
-}
+    return res.status(201).json(room);
+  } catch (error) {
+    console.error("CREATE ROOM ERROR:", error);
+    return res.status(500).json({
+      message: "Failed to create room",
+      error: error.message,
+    });
+  }
+};
 
-
-
+/**
+ * GET NEARBY ROOMS
+ * GET /api/rooms/nearby?latitude=xx&longitude=yy
+ */
 export const gerNearbyRooms = async (req, res) => {
   try {
     const { latitude, longitude } = req.query;
 
     if (!latitude || !longitude) {
-      return res
-        .status(400)
-        .json({ message: "Latitude and Longitude are required" });
+      return res.status(400).json({
+        message: "Latitude and Longitude are required",
+      });
     }
 
     const rooms = await Room.find({
@@ -40,11 +68,11 @@ export const gerNearbyRooms = async (req, res) => {
           $geometry: {
             type: "Point",
             coordinates: [
-              parseFloat(longitude),
-              parseFloat(latitude),
+              Number(longitude),
+              Number(latitude),
             ],
           },
-          $maxDistance: 5000,
+          $maxDistance: 5000, // 5 km
         },
       },
       expiresAt: { $gt: new Date() },
@@ -52,15 +80,24 @@ export const gerNearbyRooms = async (req, res) => {
 
     return res.status(200).json(rooms);
   } catch (error) {
-    console.error("Get nearby rooms error:", error);
-    return res
-      .status(500)
-      .json({ message: "Failed to fetch nearby rooms" });
+    console.error("GET NEARBY ROOMS ERROR:", error);
+    return res.status(500).json({
+      message: "Failed to fetch nearby rooms",
+      error: error.message,
+    });
   }
-}
+};
 
+/**
+ * JOIN ROOM
+ * POST /api/rooms/:roomId/join
+ */
 export const joinRoom = async (req, res) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
     const userId = req.user._id;
     const { roomId } = req.params;
 
@@ -74,37 +111,66 @@ export const joinRoom = async (req, res) => {
       return res.status(400).json({ message: "Room expired" });
     }
 
-    if (room.members.includes(userId)) {
+    if (room.members.some(id => id.toString() === userId.toString())) {
       return res.status(400).json({ message: "Already joined" });
     }
 
     room.members.push(userId);
     await room.save();
 
-    res.status(200).json({ message: "Joined room successfully" });
+    return res.status(200).json({
+      message: "Joined room successfully",
+      roomId: room._id,
+    });
   } catch (error) {
-    console.error("Join room error:", error);
-    res.status(500).json({ message: "Internal server error" });
+    console.error("JOIN ROOM ERROR:", error);
+    return res.status(500).json({
+      message: "Failed to join room",
+      error: error.message,
+    });
   }
 };
-export const leaveRoom = async(req,res)=>{
-    try{
-        const userId = req.user._id;
-        const {roomId} = req.params;
-        const room = await Room.findById(roomId);
-        if(!room){
-            return res.status(404).json({message:'Room not found'});
-        }
-        if(!room.members.includes(userId)){
-            return res.status(400).json({message:'Not a member of the room'});
-        }
-        room.members = room.members.filter(memberId => memberId.toString() !== userId.toString());
-        await room.save();
-        return res.status(200).json({message:'Left room successfully'});
-    }
-    catch(error){
-        console.error('Leave room error:', error);
-        return res.status(500).json({message:'Internal server error'});
 
+/**
+ * LEAVE ROOM
+ * POST /api/rooms/:roomId/leave
+ */
+export const leaveRoom = async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
     }
-}
+
+    const userId = req.user._id;
+    const { roomId } = req.params;
+
+    const room = await Room.findById(roomId);
+
+    if (!room) {
+      return res.status(404).json({ message: "Room not found" });
+    }
+
+    if (!room.members.some(id => id.toString() === userId.toString())) {
+      return res.status(400).json({
+        message: "You are not a member of this room",
+      });
+    }
+
+    room.members = room.members.filter(
+      (id) => id.toString() !== userId.toString()
+    );
+
+    await room.save();
+
+    return res.status(200).json({
+      message: "Left room successfully",
+      roomId: room._id,
+    });
+  } catch (error) {
+    console.error("LEAVE ROOM ERROR:", error);
+    return res.status(500).json({
+      message: "Failed to leave room",
+      error: error.message,
+    });
+  }
+};

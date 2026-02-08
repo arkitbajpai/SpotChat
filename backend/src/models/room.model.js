@@ -14,11 +14,18 @@ const roomSchema = new mongoose.Schema(
       required: true,
     },
 
-    // GeoJSON point (for later radius search)
+    members: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+
     location: {
       type: {
         type: String,
         enum: ["Point"],
+        required: true,
         default: "Point",
       },
       coordinates: {
@@ -26,20 +33,21 @@ const roomSchema = new mongoose.Schema(
         required: true,
       },
     },
-     members: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-      },
-    ],
 
     expiresAt: {
       type: Date,
       required: true,
-      index: { expireAfterSeconds: 0 }, // 🔥 AUTO DELETE
     },
   },
   { timestamps: true }
 );
+
+/* 🔥 REQUIRED INDEXES 🔥 */
+
+// Geo index for $near queries
+roomSchema.index({ location: "2dsphere" });
+
+// TTL auto-delete index
+roomSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 export const Room = mongoose.model("Room", roomSchema);
