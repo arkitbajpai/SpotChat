@@ -6,6 +6,7 @@ import {
   joinRoom,
 } from "../lib/roomsApi";
 import { useChatStore } from "../store/useChatStore";
+import { socket } from "../lib/socket"; // 🔥 IMPORTANT
 
 const RoomsPanel = () => {
   const [rooms, setRooms] = useState([]);
@@ -13,7 +14,12 @@ const RoomsPanel = () => {
 
   const { setSelectedRoom, setSelectedUser } = useChatStore();
 
+  // =========================
+  // LOAD NEARBY ROOMS
+  // =========================
   const loadRooms = () => {
+    setLoading(true);
+
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         try {
@@ -22,7 +28,8 @@ const RoomsPanel = () => {
             pos.coords.longitude
           );
           setRooms(data);
-        } catch {
+        } catch (error) {
+          console.error(error);
           toast.error("Failed to load nearby rooms");
         } finally {
           setLoading(false);
@@ -35,25 +42,36 @@ const RoomsPanel = () => {
     );
   };
 
-  useEffect(loadRooms, []);
+  useEffect(() => {
+    loadRooms();
+  }, []);
 
-  // ✅ JOIN ROOM
+  // =========================
+  // JOIN ROOM (DB + SOCKET)
+  // =========================
   const handleJoinRoom = async (room) => {
     try {
+      // 1️⃣ Join via REST (DB)
       await joinRoom(room._id);
+
+      // 2️⃣ Join Socket.IO room
+      socket.emit("join-room", { roomId: room._id });
+
+      // 3️⃣ Switch main chat panel
       setSelectedUser(null);
       setSelectedRoom(room);
-    } catch {
-      toast.error("Unable to join room");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to join room");
     }
   };
 
-  // ✅ CREATE ROOM
+  // =========================
+  // CREATE ROOM
+  // =========================
   const handleCreateRoom = () => {
     const name = prompt("Room name");
-    const durationHours = Number(
-      prompt("Duration (hours)", "1")
-    );
+    const durationHours = Number(prompt("Duration (hours)", "1"));
 
     if (!name || !durationHours) return;
 
@@ -68,14 +86,19 @@ const RoomsPanel = () => {
           });
 
           toast.success("Room created");
-          loadRooms();
-        } catch {
+          loadRooms(); // refresh list
+        } catch (error) {
+          console.error(error);
           toast.error("Failed to create room");
         }
-      }
+      },
+      () => toast.error("Location permission required")
     );
   };
 
+  // =========================
+  // LOADING STATE
+  // =========================
   if (loading) {
     return (
       <div className="p-4 text-center text-zinc-400">
@@ -84,6 +107,9 @@ const RoomsPanel = () => {
     );
   }
 
+  // =========================
+  // UI
+  // =========================
   return (
     <div className="flex flex-col h-full">
       {/* CREATE ROOM BUTTON */}
@@ -115,11 +141,13 @@ const RoomsPanel = () => {
           return (
             <div
               key={room._id}
-              className="p-3 mb-2 rounded-lg bg-base-200 hover:bg-base-300"
+              className="p-3 mb-2 rounded-lg bg-base-200 hover:bg-base-300 transition"
             >
               <div className="flex justify-between items-center">
-                <div>
-                  <p className="font-medium">{room.name}</p>
+                <div className="min-w-0">
+                  <p className="font-medium truncate">
+                    {room.name}
+                  </p>
                   <p className="text-xs text-zinc-400">
                     {room.members.length} users • ⏳ {minutesLeft} min
                   </p>
