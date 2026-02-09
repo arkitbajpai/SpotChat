@@ -62,7 +62,7 @@ const RoomsPanel = () => {
       setSelectedRoom(room);
     } catch (error) {
       console.error(error);
-      toast.error("Failed to join room");
+      toast.error("Failed to join room sorry");
     }
   };
 
