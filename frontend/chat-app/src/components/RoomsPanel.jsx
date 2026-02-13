@@ -85,7 +85,7 @@ const RoomsPanel = () => {
             durationHours,
           });
 
-          toast.success("Room created");
+          toast.success("Room created congo");
           loadRooms(); // refresh list
         } catch (error) {
           console.error(error);
