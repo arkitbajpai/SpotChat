@@ -6,13 +6,14 @@ import {
   joinRoom,
 } from "../lib/roomsApi";
 import { useChatStore } from "../store/useChatStore";
-import { socket } from "../lib/socket"; // 🔥 IMPORTANT
+import { useAuthStore } from "../store/useAuthStore"; // ✅ CORRECT
 
 const RoomsPanel = () => {
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const { setSelectedRoom, setSelectedUser } = useChatStore();
+  const socket = useAuthStore((state) => state.socket); // ✅ GET REAL SOCKET
 
   // =========================
   // LOAD NEARBY ROOMS
@@ -51,13 +52,17 @@ const RoomsPanel = () => {
   // =========================
   const handleJoinRoom = async (room) => {
     try {
-      // 1️⃣ Join via REST (DB)
+      // 1️⃣ Join via REST
       await joinRoom(room._id);
 
-      // 2️⃣ Join Socket.IO room
-      socket.emit("join-room", { roomId: room._id });
+      // 2️⃣ Join socket room (SAFE)
+      if (socket?.connected) {
+        socket.emit("join-room", { roomId: room._id });
+      } else {
+        console.warn("Socket not connected yet");
+      }
 
-      // 3️⃣ Switch main chat panel
+      // 3️⃣ Switch chat panel
       setSelectedUser(null);
       setSelectedRoom(room);
     } catch (error) {
@@ -86,7 +91,7 @@ const RoomsPanel = () => {
           });
 
           toast.success("Room created congo");
-          loadRooms(); // refresh list
+          loadRooms();
         } catch (error) {
           console.error(error);
           toast.error("Failed to create room");
