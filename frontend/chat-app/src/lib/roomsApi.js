@@ -32,7 +32,7 @@ export const createRoom = async ({
 
 export const joinRoom = async (roomId) => {
   const res = await fetch(
-    `http://localhost:5000/api/rooms/${roomId}/join`,
+    `http://localhost:5001/api/rooms/${roomId}/join`,
     {
       method: "POST",
       credentials: "include",
