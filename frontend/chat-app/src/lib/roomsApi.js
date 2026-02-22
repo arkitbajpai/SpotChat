@@ -32,12 +32,18 @@ export const createRoom = async ({
 
 export const joinRoom = async (roomId) => {
   const res = await fetch(
-    `http://localhost:5001/api/rooms/${roomId}/join`,
+    `${BASE_URL}/api/rooms/${roomId}/join`,
     {
       method: "POST",
       credentials: "include",
     }
   );
 
-  if (!res.ok) throw new Error("Failed to join room");
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.message || "Failed to join room");
+  }
+
+  return data;
 };

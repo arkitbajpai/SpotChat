@@ -125,7 +125,7 @@ export const joinRoom = async (req, res) => {
   } catch (error) {
     console.error("JOIN ROOM ERROR:", error);
     return res.status(500).json({
-      message: "Failed to join room",
+      message: "Failed to join room in rooms controller",
       error: error.message,
     });
   }
