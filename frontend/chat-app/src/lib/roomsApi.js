@@ -1,20 +1,33 @@
+const BASE_URL = "http://localhost:5001";
+
+// =======================
+// FETCH NEARBY ROOMS
+// =======================
 export const fetchNearbyRooms = async (latitude, longitude) => {
   const res = await fetch(
-    `http://localhost:5001/api/rooms/nearby?latitude=${latitude}&longitude=${longitude}`,
+    `${BASE_URL}/api/rooms/nearby?latitude=${latitude}&longitude=${longitude}`,
     { credentials: "include" }
   );
 
-  if (!res.ok) throw new Error("Failed to fetch rooms");
-  return res.json(); // 👈 array
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.message || "Failed to fetch rooms");
+  }
+
+  return data;
 };
 
+// =======================
+// CREATE ROOM
+// =======================
 export const createRoom = async ({
   name,
   latitude,
   longitude,
   durationHours,
 }) => {
-  const res = await fetch("http://localhost:5001/api/rooms", {
+  const res = await fetch(`${BASE_URL}/api/rooms`, {
     method: "POST",
     credentials: "include",
     headers: { "Content-Type": "application/json" },
@@ -26,10 +39,18 @@ export const createRoom = async ({
     }),
   });
 
-  if (!res.ok) throw new Error("Failed to create room sorry");
-  return res.json();
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.message || "Failed to create room");
+  }
+
+  return data;
 };
 
+// =======================
+// JOIN ROOM
+// =======================
 export const joinRoom = async (roomId) => {
   const res = await fetch(
     `${BASE_URL}/api/rooms/${roomId}/join`,
