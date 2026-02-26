@@ -4,19 +4,15 @@ import { axiosInstance } from "../lib/axios";
 import { useAuthStore } from "./useAuthStore";
 
 export const useChatStore = create((set, get) => ({
-  // =========================
-  // STATE
-  // =========================
+  
   messages: [],
   users: [],
   selectedUser: null,
-  selectedRoom: null, // ✅ ADDED
+  selectedRoom: null, 
   isUserLoading: false,
   isMessageLoading: false,
 
-  // =========================
-  // GET USERS
-  // =========================
+ 
   getUsers: async () => {
     set({ isUserLoading: true });
     try {
@@ -30,9 +26,7 @@ export const useChatStore = create((set, get) => ({
     }
   },
 
-  // =========================
-  // GET PRIVATE MESSAGES
-  // =========================
+  
   getMessages: async (userId) => {
     set({ isMessageLoading: true });
     try {
@@ -41,15 +35,13 @@ export const useChatStore = create((set, get) => ({
       set({ messages: res.data.messages });
     } catch (err) {
       toast.error("Failed to fetch messages");
-      console.log("getMessages error in the chatStore:", err);
+      console.log("getMessages error in the chatStore 1:", err);
     } finally {
       set({ isMessageLoading: false });
     }
   },
 
-  // =========================
-  // SEND PRIVATE MESSAGE
-  // =========================
+  
   sendMessage: async (messageData) => {
     const { selectedUser } = get();
     if (!selectedUser) return;
@@ -71,9 +63,7 @@ export const useChatStore = create((set, get) => ({
     }
   },
 
-  // =========================
-  // SOCKET: PRIVATE CHAT SUBSCRIBE
-  // =========================
+ 
   subscribeToNewMessages: () => {
     const { selectedUser } = get();
     if (!selectedUser) return;
@@ -81,7 +71,7 @@ export const useChatStore = create((set, get) => ({
     const socket = useAuthStore.getState().socket;
     if (!socket) return;
 
-    // 🔥 prevent duplicate listeners
+   
     socket.off("newMessage");
 
     socket.on("newMessage", (newMessage) => {
