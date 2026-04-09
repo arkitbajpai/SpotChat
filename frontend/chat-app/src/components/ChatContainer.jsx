@@ -8,38 +8,54 @@ import MessageSkeleton from "./skeletons/MessageSkeleton";
 import { formatMessageTime } from "../lib/utils";
 
 const ChatContainer = () => {
-  const { messages, getMessages, isMessageLoading, selectedUser,unsubscribeFromNewMessages,subscribeToNewMessages } = useChatStore();
-  const { authUser } = useAuthStore();
+  const {
+    messages,
+    getMessages,
+    isMessageLoading,
+    selectedUser,
+    selectedRoom, // ✅ FIXED
+    unsubscribeFromNewMessages,
+    subscribeToNewMessages,
+  } = useChatStore();
+
+  const { authUser } = useAuthStore(); // ✅ only auth here
 
   const messageEndRef = useRef(null);
 
-useEffect(() => {
-  getMessages(selectedUser?._id);
-  subscribeToNewMessages();
-  return () => {
-    unsubscribeFromNewMessages();
-  }
-}, [selectedUser._id,getMessages,subscribeToNewMessages,unsubscribeFromNewMessages]);
-  
-  // useEffect(() => {
-  //   if (!selectedUser?._id) return; // prevent crash on page load
-  //   getMessages(selectedUser._id);
-  // }, [selectedUser?._id]); // only key dependency
-  // // --------------------------------------------------
+  // =============================
+  // PRIVATE CHAT LOGIC
+  // =============================
+  useEffect(() => {
+    if (!selectedUser) return;
 
-  // if (!selectedUser) {
-  //   return (
-  //     <div className="flex-1 flex items-center justify-center text-zinc-500">
-  //       Select a user to start chatting
-  //     </div>
-  //   );
-  // }
- useEffect(() => {
-  if(messageEndRef.current&&messages){
-    messageEndRef.current.scrollIntoView({behavior:"smooth"});
+    getMessages(selectedUser._id);
+    subscribeToNewMessages();
+
+    return () => {
+      unsubscribeFromNewMessages();
+    };
+  }, [selectedUser]);
+
+  // =============================
+  // SCROLL TO BOTTOM
+  // =============================
+  useEffect(() => {
+    if (messageEndRef.current && messages) {
+      messageEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+
+  // =============================
+  // NO CHAT SELECTED
+  // =============================
+  if (!selectedUser && !selectedRoom) {
+    return (
+      <div className="flex-1 flex items-center justify-center text-zinc-500">
+        Select a chat to start messaging
+      </div>
+    );
   }
 
- }, [messages]);
   if (isMessageLoading) {
     return (
       <div className="flex-1 flex flex-col overflow-auto">
@@ -50,7 +66,6 @@ useEffect(() => {
     );
   }
 
-  // Make sure messages is always an array
   const safeMessages = Array.isArray(messages) ? messages : [];
 
   return (
@@ -62,7 +77,9 @@ useEffect(() => {
           <div
             key={message._id}
             className={`chat ${
-              message.senderId === authUser._id ? "chat-end" : "chat-start"
+              message.senderId === authUser._id
+                ? "chat-end"
+                : "chat-start"
             }`}
             ref={messageEndRef}
           >
@@ -72,7 +89,7 @@ useEffect(() => {
                   src={
                     message.senderId === authUser._id
                       ? authUser.profilepic || "/avatar.png"
-                      : selectedUser.profilepic || "/avatar.png"
+                      : selectedUser?.profilepic || "/avatar.png"
                   }
                   alt="profile pic"
                 />
