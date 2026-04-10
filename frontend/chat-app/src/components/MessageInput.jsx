@@ -2,12 +2,14 @@ import React from 'react'
 import { useState, useRef } from 'react';
 import { useChatStore } from '../store/useChatStore';
 import { Image, Send, X } from 'lucide-react';
+import { useAuthStore } from '../store/useAuthStore';
 
 const MessageInput = () => {
     const [text, setText] = useState("");
     const [imagePreview, setImagePreview] = useState(null);
     const fileInputRef = useRef(null);
-    const {sendMessage} = useChatStore();
+   const { sendMessage, selectedUser, selectedRoom } = useChatStore();
+    const socket = useAuthStore((state) => state.socket);
     const handleImageChange=(e)=>{
         const file = e.target.files[0];
         if(!file.type.startsWith("image/")){

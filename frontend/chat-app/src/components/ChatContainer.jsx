@@ -14,8 +14,8 @@ const ChatContainer = () => {
     isMessageLoading,
     selectedUser,
     selectedRoom, // ✅ FIXED
-    unsubscribeFromNewMessages,
-    subscribeToNewMessages,
+    subscribeToRoomMessages,
+    unsubscribeFromRoomMessages
   } = useChatStore();
 
   const { authUser } = useAuthStore(); // ✅ only auth here
@@ -26,15 +26,20 @@ const ChatContainer = () => {
   // PRIVATE CHAT LOGIC
   // =============================
   useEffect(() => {
-    if (!selectedUser) return;
+  if (!selectedRoom) return;
 
-    getMessages(selectedUser._id);
-    subscribeToNewMessages();
+  const socket = useAuthStore.getState().socket;
 
-    return () => {
-      unsubscribeFromNewMessages();
-    };
-  }, [selectedUser]);
+  // 🔥 join socket room
+  socket?.emit("join-room", { roomId: selectedRoom._id });
+
+  subscribeToRoomMessages();
+
+  return () => {
+    socket?.emit("leave-room", { roomId: selectedRoom._id });
+    unsubscribeFromRoomMessages();
+  };
+}, [selectedRoom]);
 
   // =============================
   // SCROLL TO BOTTOM
