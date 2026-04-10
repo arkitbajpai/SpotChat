@@ -33,26 +33,24 @@ io.on("connection", (socket) => {
     userSocketMap[userId] = socket.id;
   }
 
-  // Emit online users to everyone
   io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
   // -------------------------
-  // ROOM SOCKET EVENTS 🔥
+  // JOIN ROOM
   // -------------------------
-
-  // Join a room (Socket.IO room)
   socket.on("join-room", ({ roomId }) => {
     socket.join(roomId);
     console.log(`User ${userId} joined socket room ${roomId}`);
 
-    // Optional: notify others in room
     socket.to(roomId).emit("room-user-joined", {
       userId,
       roomId,
     });
   });
 
-  // Leave a room
+  // -------------------------
+  // LEAVE ROOM
+  // -------------------------
   socket.on("leave-room", ({ roomId }) => {
     socket.leave(roomId);
     console.log(`User ${userId} left socket ${roomId}`);
@@ -61,6 +59,23 @@ io.on("connection", (socket) => {
       userId,
       roomId,
     });
+  });
+
+  // -------------------------
+  // 🔥 ROOM MESSAGE (FIXED)
+  // -------------------------
+  socket.on("room-message", ({ roomId, text, image }) => {
+    const message = {
+      roomId,
+      text,
+      image,
+      senderId: userId,
+      createdAt: new Date(),
+    };
+
+    io.to(roomId).emit("room-message", message);
+
+    console.log("Room message:", message);
   });
 
   // -------------------------
