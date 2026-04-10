@@ -82,7 +82,7 @@ const ChatContainer = () => {
           <div
             key={message._id}
             className={`chat ${
-              message.senderId === authUser._id
+              message.senderId?.toString() === authUser._id?.toString()
                 ? "chat-end"
                 : "chat-start"
             }`}

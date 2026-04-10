@@ -14,13 +14,14 @@ export const useAuthStore = create((set, get) => ({
   onlineUsers: [],
   socket: null,
 
-  // ---------------- CHECK AUTH ----------------
+  // =========================
+  // CHECK AUTH
+  // =========================
   checkAuth: async () => {
     try {
       const res = await axiosInstance.get("/auth/check");
       set({ authUser: res.data });
 
-      
       get().connectSocket();
     } catch (err) {
       set({ authUser: null });
@@ -29,13 +30,15 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
-  // ---------------- SIGNUP ----------------
+  // =========================
+  // SIGNUP
+  // =========================
   signup: async (data) => {
     set({ isSigningUp: true });
     try {
       const res = await axiosInstance.post("/auth/signup", data);
       set({ authUser: res.data });
-      toast.success("Signup successful congrats");
+      toast.success("Signup successful");
 
       get().connectSocket();
     } catch (err) {
@@ -45,7 +48,9 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
-  // ---------------- LOGIN ----------------
+  // =========================
+  // LOGIN
+  // =========================
   login: async (data) => {
     set({ isLoggingIn: true });
     try {
@@ -61,61 +66,86 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
-  // ---------------- LOGOUT ----------------
+  // =========================
+  // LOGOUT
+  // =========================
   logout: async () => {
     try {
       await axiosInstance.post("/auth/logout");
+
       get().disconnectSocket();
       set({ authUser: null });
+
       toast.success("Logout successful");
     } catch (err) {
       toast.error("Logout failed");
     }
   },
 
-  // ---------------- UPDATE PROFILE ----------------
+  // =========================
+  // UPDATE PROFILE
+  // =========================
   updateProfile: async (data) => {
     set({ isUpdatingProfile: true });
+
     try {
       const res = await axiosInstance.put("/auth/update-profile", data);
       set({ authUser: res.data });
+
       toast.success("Profile updated");
     } catch (err) {
-      toast.error("Profile update failed sorry");
+      toast.error("Profile update failed");
     } finally {
       set({ isUpdatingProfile: false });
     }
   },
 
-  // ---------------- CONNECT SOCKET ----------------
+  // =========================
+  // CONNECT SOCKET
+  // =========================
   connectSocket: () => {
     const { authUser, socket } = get();
 
-    
     if (!authUser || socket?.connected) return;
 
     const newSocket = io(baseURL, {
-      withCredentials: true,        
-      transports: ["websocket"],    
+      withCredentials: true,
+      transports: ["websocket"],
       query: {
-        userId: authUser._id,       
+        userId: authUser._id,
       },
     });
 
-    
+    // 🔥 Debug Logs
+    newSocket.on("connect", () => {
+      console.log("✅ Socket connected:", newSocket.id);
+    });
 
+    newSocket.on("disconnect", () => {
+      console.log("❌ Socket disconnected");
+    });
+
+    // Online users
     newSocket.on("getOnlineUsers", (userIds) => {
-     
       set({ onlineUsers: userIds });
     });
 
     set({ socket: newSocket });
   },
 
-  
+  // =========================
+  // DISCONNECT SOCKET
+  // =========================
   disconnectSocket: () => {
     const socket = get().socket;
-    if (socket) socket.disconnect();
-    set({ socket: null, onlineUsers: [] });
+
+    if (socket) {
+      socket.disconnect();
+    }
+
+    set({
+      socket: null,
+      onlineUsers: [],
+    });
   },
 }));

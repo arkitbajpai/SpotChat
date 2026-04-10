@@ -30,27 +30,41 @@ const MessageInput = () => {
         fileInputRef.current.value="";
     }
    };
-   const handleSendMessage=async(e)=>{
-    e.preventDefault();
-    if(!text.trim() && !imagePreview){
-        return;
-    }
-    try{
-        await sendMessage({
-            text:text.trim(),
-            image:imagePreview
-        });
-            setText("");
-            removeImagePreview(null);
-            if(fileInputRef.current){
-                fileInputRef.current.value="";
-            }
+   const handleSendMessage = async (e) => {
+  e.preventDefault();
 
+  if (!text.trim() && !imagePreview) return;
 
-    }catch(err){
-        console.log("Error sending message:", err);
+  try {
+
+    // 🔥 ROOM MESSAGE
+    if (selectedRoom) {
+      console.log("Sending ROOM message");
+
+      socket?.emit("room-message", {
+        roomId: selectedRoom._id,
+        text: text.trim(),
+        image: imagePreview,
+      });
+
+      setText("");
+      removeImagePreview();
+      return;
     }
-   }
+
+    // 🔥 PRIVATE MESSAGE
+    await sendMessage({
+      text: text.trim(),
+      image: imagePreview,
+    });
+
+    setText("");
+    removeImagePreview();
+
+  } catch (err) {
+    console.log("Error sending message:", err);
+  }
+};
 
   return (
      <div className="p-4 w-full">
