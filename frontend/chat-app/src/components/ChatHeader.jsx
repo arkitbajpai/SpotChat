@@ -1,9 +1,12 @@
 import { X } from "lucide-react";
 import { useChatStore } from "../store/useChatStore";
+import { useAuthStore } from "../store/useAuthStore";
 
 const ChatHeader = () => {
-  const { selectedUser, selectedRoom, setSelectedUser, setSelectedRoom } =
+  const { selectedUser, selectedRoom, setSelectedUser, setSelectedRoom} =
     useChatStore();
+    const{onlineUsers} = useAuthStore();
+    const isOnline = onlineUsers?.includes(selectedUser?._id);
 
   const handleClose = () => {
     setSelectedUser(null);
@@ -36,7 +39,7 @@ const ChatHeader = () => {
 
             {selectedUser && (
               <p className="text-sm text-base-content/70">
-                {selectedUser?.status || "Offline"}
+               {isOnline ? "Online" : "Offline"}
               </p>
             )}
           </div>

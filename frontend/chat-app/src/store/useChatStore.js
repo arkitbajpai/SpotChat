@@ -135,20 +135,25 @@ export const useChatStore = create((set, get) => ({
   // =========================
   // SET SELECTED USER
   // =========================
-  setSelectedUser: (selectedUser) => {
-    const socket = useAuthStore.getState().socket;
-    const { selectedRoom } = get();
+  setSelectedUser: async (selectedUser) => {
+  const socket = useAuthStore.getState().socket;
+  const { selectedRoom, getMessages } = get();
 
-    if (selectedRoom) {
-      socket?.emit("leave-room", { roomId: selectedRoom._id });
-    }
+  if (selectedRoom) {
+    socket?.emit("leave-room", { roomId: selectedRoom._id });
+  }
 
-    set({
-      selectedUser,
-      selectedRoom: null,
-      messages: [],
-    });
-  },
+  set({
+    selectedUser,
+    selectedRoom: null,
+    messages: [],
+  });
+
+  // ✅ Fetch old messages
+  if (selectedUser?._id) {
+    getMessages(selectedUser._id);
+  }
+},
 
   // =========================
   // SET SELECTED ROOM

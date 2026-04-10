@@ -15,8 +15,17 @@ const ChatContainer = () => {
     selectedUser,
     selectedRoom, // ✅ FIXED
     subscribeToRoomMessages,
-    unsubscribeFromRoomMessages
+    unsubscribeFromRoomMessages,
+    subscribeToNewMessages,       
+  unsubscribeFromNewMessages
   } = useChatStore();
+  useEffect(() => {
+  if (!selectedUser) return;
+
+ subscribeToNewMessages();
+
+  return () => unsubscribeFromNewMessages();
+}, [selectedUser]);
 
   const { authUser } = useAuthStore(); // ✅ only auth here
 
@@ -101,11 +110,16 @@ const ChatContainer = () => {
               </div>
             </div>
 
-            <div className="chat-header mb-1">
-              <time className="text-xs opacity-50 ml-1">
-                {formatMessageTime(message.createdAt)}
-              </time>
-            </div>
+            <div className="chat-header mb-1 flex items-center gap-2">
+                {selectedRoom && (
+                  <span className="text-xs font-medium">
+                    {message.senderName || message.sender?.fullName || "User"}
+                  </span>
+                )}
+                <time className="text-xs opacity-50">
+                  {formatMessageTime(message.createdAt)}
+                </time>
+              </div>
 
             <div className="chat-bubble flex flex-col">
               {message.image && (
