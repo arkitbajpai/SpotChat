@@ -111,26 +111,31 @@ export const joinRoom = async (req, res) => {
       return res.status(400).json({ message: "Room expired" });
     }
 
-    if (room.members.some(id => id.toString() === userId.toString())) {
-      return res.status(400).json({ message: "Already joined" });
+    // 🔥 IMPORTANT CHANGE
+    const alreadyJoined = room.members.some(
+      (id) => id.toString() === userId.toString()
+    );
+
+    if (!alreadyJoined) {
+      room.members.push(userId);
+      await room.save();
     }
 
-    room.members.push(userId);
-    await room.save();
-
     return res.status(200).json({
-      message: "Joined room successfully",
+      message: alreadyJoined
+        ? "Already joined"
+        : "Joined room successfully",
       roomId: room._id,
     });
+
   } catch (error) {
     console.error("JOIN ROOM ERROR:", error);
     return res.status(500).json({
-      message: "Failed to join room in rooms controller",
+      message: "Failed to join room",
       error: error.message,
     });
   }
 };
-
 /**
  * LEAVE ROOM
  * POST /api/rooms/:roomId/leave
