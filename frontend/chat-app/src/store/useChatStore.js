@@ -4,7 +4,6 @@ import { axiosInstance } from "../lib/axios";
 import { useAuthStore } from "./useAuthStore";
 
 export const useChatStore = create((set, get) => ({
-
   // =========================
   // STATE
   // =========================
@@ -24,11 +23,9 @@ export const useChatStore = create((set, get) => ({
     try {
       const res = await axiosInstance.get("/messages/users");
       set({ users: res.data.users });
-
     } catch (err) {
       toast.error("Failed to fetch users");
       console.log("getUsers error:", err);
-
     } finally {
       set({ isUserLoading: false });
     }
@@ -43,11 +40,9 @@ export const useChatStore = create((set, get) => ({
     try {
       const res = await axiosInstance.get(`/messages/${userId}`);
       set({ messages: res.data.messages });
-
     } catch (err) {
       toast.error("Failed to fetch messages");
       console.log("getMessages error:", err);
-
     } finally {
       set({ isMessageLoading: false });
     }
@@ -71,7 +66,6 @@ export const useChatStore = create((set, get) => ({
       set((state) => ({
         messages: [...state.messages, newMessage],
       }));
-
     } catch (err) {
       toast.error("Failed to send message");
       console.log("sendMessage error:", err);
@@ -102,6 +96,7 @@ export const useChatStore = create((set, get) => ({
       }));
     });
   },
+
   unsubscribeFromNewMessages: () => {
     const socket = useAuthStore.getState().socket;
     if (!socket) return;
@@ -140,17 +135,38 @@ export const useChatStore = create((set, get) => ({
   // =========================
   // SET SELECTED USER
   // =========================
-  setSelectedUser: (selectedUser) =>
+  setSelectedUser: (selectedUser) => {
+    const socket = useAuthStore.getState().socket;
+    const { selectedRoom } = get();
+
+    if (selectedRoom) {
+      socket?.emit("leave-room", { roomId: selectedRoom._id });
+    }
+
     set({
       selectedUser,
       selectedRoom: null,
       messages: [],
-    }),
+    });
+  },
 
-  setSelectedRoom: (selectedRoom) =>
+  // =========================
+  // SET SELECTED ROOM
+  // =========================
+  setSelectedRoom: (selectedRoom) => {
+    const socket = useAuthStore.getState().socket;
+    const { selectedRoom: prevRoom } = get();
+
+    if (prevRoom) {
+      socket?.emit("leave-room", { roomId: prevRoom._id });
+    }
+
+    socket?.emit("join-room", { roomId: selectedRoom._id });
+
     set({
       selectedRoom,
       selectedUser: null,
       messages: [],
-    }),
+    });
+  },
 }));

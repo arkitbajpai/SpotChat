@@ -65,6 +65,7 @@ io.on("connection", (socket) => {
   // 🔥 ROOM MESSAGE (FIXED)
   // -------------------------
   socket.on("room-message", ({ roomId, text, image }) => {
+    console.log("ROOM MESSAGE RECEIVED FROM CLIENT", roomId, text); 
     const message = {
       roomId,
       text,
@@ -72,6 +73,7 @@ io.on("connection", (socket) => {
       senderId: userId,
       createdAt: new Date(),
     };
+
 
     io.to(roomId).emit("room-message", message);
 
