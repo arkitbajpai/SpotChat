@@ -81,3 +81,66 @@ export const sendMessage= async(req,res)=>{
     }
 
 }
+
+export const getRoomMessages = async (req, res) => {
+  try {
+    const { roomId } = req.params;
+
+    const messages = await Message.find({ roomId })
+      .populate("senderId", "fullName profilepic")
+      .sort({ createdAt: 1 });
+
+    res.status(200).json({ messages });
+
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to fetch room messages"
+    });
+  }
+};
+
+// ===============================
+// SEND ROOM MESSAGE
+// ===============================
+export const sendRoomMessage = async (req, res) => {
+  try {
+    const { roomId } = req.params;
+    const senderId = req.user._id;
+    const { text, image } = req.body;
+
+    let imageUrl;
+
+    if (image) {
+      const uploadedImage = await cloudinary.uploader.upload(image, {
+        folder: "chat-app"
+      });
+
+      imageUrl = uploadedImage.secure_url;
+    }
+
+    const newMessage = new Message({
+      senderId,
+      roomId,
+      text,
+      image: imageUrl
+    });
+
+    await newMessage.save();
+
+    const populatedMessage = await newMessage.populate(
+      "senderId",
+      "fullName profilepic"
+    );
+
+    io.to(roomId).emit("room-message", populatedMessage);
+
+    res.status(200).json({
+      message: populatedMessage
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to send room message"
+    });
+  }
+};
