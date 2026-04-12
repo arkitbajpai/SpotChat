@@ -1,6 +1,7 @@
 import { Server } from "socket.io";
 import http from "http";
 import express from "express";
+import { User } from "../models/user.model.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -64,21 +65,25 @@ io.on("connection", (socket) => {
   // -------------------------
   // 🔥 ROOM MESSAGE (FIXED)
   // -------------------------
-  socket.on("room-message", ({ roomId, text, image }) => {
-    console.log("ROOM MESSAGE RECEIVED FROM CLIENT", roomId, text); 
-    const message = {
-      roomId,
-      text,
-      image,
-      senderId: userId,
-      createdAt: new Date(),
-    };
+  socket.on("room-message", async ({ roomId, text, image }) => {
+  console.log("ROOM MESSAGE RECEIVED FROM CLIENT", roomId, text);
 
+  const user = await User.findById(userId)
+    .select("fullName profilepic");
 
-    io.to(roomId).emit("room-message", message);
+  const message = {
+    roomId,
+    text,
+    image,
+    senderId: userId,
+    sender: user, // ⭐ add sender info
+    createdAt: new Date(),
+  };
 
-    console.log("Room message:", message);
-  });
+  io.to(roomId).emit("room-message", message);
+
+  console.log("Room message:", message);
+});
 
   // -------------------------
   // DISCONNECT
