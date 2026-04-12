@@ -155,6 +155,23 @@ export const useChatStore = create((set, get) => ({
   }
 },
 
+getRoomMessages: async (roomId) => {
+  try {
+    set({ isMessageLoading: true });
+
+    const res = await axiosInstance.get(`/messages/room/${roomId}`);
+
+    set({
+      messages: res.data.messages,
+    });
+
+  } catch (error) {
+    toast.error("Failed to fetch room messages");
+  } finally {
+    set({ isMessageLoading: false });
+  }
+},
+
   // =========================
   // SET SELECTED ROOM
   // =========================

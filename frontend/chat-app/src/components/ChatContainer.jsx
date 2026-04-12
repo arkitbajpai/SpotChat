@@ -13,7 +13,8 @@ const ChatContainer = () => {
     getMessages,
     isMessageLoading,
     selectedUser,
-    selectedRoom, // ✅ FIXED
+    selectedRoom, 
+    getRoomMessages,// ✅ FIXED
     subscribeToRoomMessages,
     unsubscribeFromRoomMessages,
     subscribeToNewMessages,       
@@ -39,8 +40,9 @@ const ChatContainer = () => {
 
   const socket = useAuthStore.getState().socket;
 
-  // 🔥 join socket room
   socket?.emit("join-room", { roomId: selectedRoom._id });
+
+  getRoomMessages(selectedRoom._id);   // ⭐ ADD THIS
 
   subscribeToRoomMessages();
 

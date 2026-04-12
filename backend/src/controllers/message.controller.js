@@ -144,3 +144,7 @@ export const sendRoomMessage = async (req, res) => {
     });
   }
 };
+
+// ===============================
+// GET ROOM MESSAGES
+// ===============================
