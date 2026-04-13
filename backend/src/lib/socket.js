@@ -41,7 +41,7 @@ io.on("connection", (socket) => {
   // -------------------------
   socket.on("join-room", ({ roomId }) => {
     socket.join(roomId);
-    console.log(`User ${userId} joined socket room ${roomId}`);
+    
 
     socket.to(roomId).emit("room-user-joined", {
       userId,
@@ -54,7 +54,7 @@ io.on("connection", (socket) => {
   // -------------------------
   socket.on("leave-room", ({ roomId }) => {
     socket.leave(roomId);
-    console.log(`User ${userId} left socket ${roomId}`);
+    
 
     socket.to(roomId).emit("room-user-left", {
       userId,
@@ -66,7 +66,7 @@ io.on("connection", (socket) => {
   // 🔥 ROOM MESSAGE (FIXED)
   // -------------------------
   socket.on("room-message", async ({ roomId, text, image }) => {
-  console.log("ROOM MESSAGE RECEIVED FROM CLIENT", roomId, text);
+ 
 
   const user = await User.findById(userId)
     .select("fullName profilepic");
@@ -82,7 +82,7 @@ io.on("connection", (socket) => {
 
   io.to(roomId).emit("room-message", message);
 
-  console.log("Room message:", message);
+  
 });
 
   // -------------------------
@@ -94,7 +94,7 @@ io.on("connection", (socket) => {
     }
 
     io.emit("getOnlineUsers", Object.keys(userSocketMap));
-    console.log(`Socket disconnected for user ${userId}`);
+    
   });
 });
 
