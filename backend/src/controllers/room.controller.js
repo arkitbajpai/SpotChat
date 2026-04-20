@@ -8,7 +8,7 @@ export const createRoom = async (req, res) => {
   try {
     // auth middleware guarantees this, but we still guard
     if (!req.user) {
-      return res.status(401).json({ message: "Unauthorized" });
+      return res.status(401).json({ message: "Unauthorized sorry" });
     }
 
     const { name, latitude, longitude, durationHours } = req.body;
