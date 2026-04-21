@@ -9,7 +9,7 @@ export const getUsersForSidebar= async(req,res)=>{
         const loggedInUserId= req.user._id;
         const me = await User.findById(loggedInUserId).populate("friends","-password");
         if(!me){
-            return res.status(404).json({message:"User not found"});
+            return res.status(404).json({message:"User not found sorry!"});
         }
         //const filteredUsers=await me.find({_id:{$ne:loggedInUserId}}).select("-password");
          const filteredFriends = me.friends.filter(Boolean);
