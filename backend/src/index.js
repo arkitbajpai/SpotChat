@@ -9,11 +9,11 @@ import cors from 'cors';
 import {app,server} from './lib/socket.js';
 import roomroutes from './routes/room.routes.js';
 
-
+import path from "path"
 
 dotenv.config();
 const PORT = process.env.PORT || 5001;
-
+const __dirname=path.resolve
 
 app.use(express.json({ limit: "10mb" }));
 app.use(cookieParser());
