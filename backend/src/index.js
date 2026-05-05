@@ -28,6 +28,14 @@ app.use("/api/auth",authRoutes)
 app.use("/api/users", userRoutes);
 app.use("/api/messages",messageRoutes)
 app.use("/api/rooms",roomroutes);
+
+if(process.env.NODE_ENV==="prod" ){
+    app.use(express.static(path.join(__dirname,"../frontend/chat-app/dist")));
+    app.get("*",(req,res)=>{
+        res.sendFile(path.join(__dirname,"../frontend/chat-app","dist","index.html"))
+    })
+}
+
 server.listen(PORT,()=>{
     console.log('Server is running on port 5001');
     connectDB();
