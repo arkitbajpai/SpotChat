@@ -29,13 +29,18 @@ app.use("/api/users", userRoutes);
 app.use("/api/messages",messageRoutes)
 app.use("/api/rooms",roomroutes);
 
+// ✅ Serve frontend (NO wildcard get)
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "../frontend/chat-app/dist")));
+  const distPath = path.join(__dirname, "../frontend/chat-app/dist");
 
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "../frontend/chat-app", "dist", "index.html"));
+  app.use(express.static(distPath));
+
+  // 🔥 fallback route (safe, no path-to-regexp issue)
+  app.use((req, res) => {
+    res.sendFile(path.join(distPath, "index.html"));
   });
 }
+
 
 server.listen(PORT,()=>{
     console.log('Server is running on port 5001');
