@@ -19,18 +19,15 @@ import FriendsPage from "./pages/FriendsPage";
 const App = () => {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
   const initTheme = useThemeStore((state) => state.initTheme);
-
-  // auth
   useEffect(() => {
     checkAuth();
-  }, [checkAuth]);
-
-  // ✅ INIT THEME ON APP LOAD
+  }, []);
   useEffect(() => {
     initTheme();
   }, [initTheme]);
 
-  if (isCheckingAuth && !authUser) {
+  // ✅ block UI until auth check completes
+  if (isCheckingAuth) {
     return (
       <div className="flex items-center justify-center h-screen">
         <Loader className="size-10 animate-spin" />
@@ -39,19 +36,17 @@ const App = () => {
   }
 
   return (
-  <>
-    <Navbar />
-    <Routes>
-      <Route path="/" element={authUser ? <HomePage /> : <Navigate to="/login" />} />
-      <Route path="/signup" element={!authUser ? <SignUpPage /> : <Navigate to="/" />} />
-      <Route path="/login" element={!authUser ? <LoginPage /> : <Navigate to="/" />} />
-      <Route path="/profile" element={authUser ? <ProfilePage /> : <Navigate to="/login" />} />
-      <Route path="/friends" element={<FriendsPage />} />
-       <Route path="/settings" element={<SettingPage />} />
-    </Routes>
-    <Toaster />
-  </>
+    <>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={authUser ? <HomePage /> : <Navigate to="/login" />} />
+        <Route path="/signup" element={!authUser ? <SignUpPage /> : <Navigate to="/" />} />
+        <Route path="/login" element={!authUser ? <LoginPage /> : <Navigate to="/" />} />
+        <Route path="/profile" element={authUser ? <ProfilePage /> : <Navigate to="/login" />} />
+        <Route path="/friends" element={<FriendsPage />} />
+        <Route path="/settings" element={<SettingPage />} />
+      </Routes>
+      <Toaster />
+    </>
   );
 };
-
-export default App;
