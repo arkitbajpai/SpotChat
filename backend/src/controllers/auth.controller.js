@@ -85,27 +85,33 @@ export const logout= (req,res)=>{
         res.status(500).json({message:"Internal server error at logout"});
     }
 }
-export const updateProfile= async(req,res)=>{
-    try{
-        const {profilePic}= req.body;
-        const userId=req.user._id;
-        if(!profilePic){
-            return res.status(400).json({message:"Profile picture is required"});
-        }
-         const uploadedResposne =await cloudinary.uploader.upload(profilePic);
-         const updatedUser= await User.findByIdAndUpdate(userId,{
-            profilepic:uploadedResposne.secure_url,
-         },{new:true}).select("-password");
-         res.status(200).json({
-            message:"Profile updated successfully",
-            user:updatedUser,
-         });
+export const updateProfile = async (req, res) => {
+  try {
+    const { profilePic } = req.body;
+    const userId = req.user._id;
+
+    if (!profilePic) {
+      return res.status(400).json({ message: "Profile picture is required" });
     }
-    catch(err){
-        console.log(err);
-        res.status(500).json({message:"Internal server error at updateProfile"});
-    }
-}
+
+    const uploadedResponse = await cloudinary.uploader.upload(profilePic);
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      {
+        profilePic: uploadedResponse.secure_url, // ✅ FIXED
+      },
+      { new: true }
+    ).select("-password");
+
+    // ✅ RETURN ONLY USER (VERY IMPORTANT)
+    res.status(200).json(updatedUser);
+
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Internal server error at updateProfile" });
+  }
+};
 export const checkAuth=async(req,res)=>{
    try{
    const user = await User.findById(req.user._id).select("-password");
