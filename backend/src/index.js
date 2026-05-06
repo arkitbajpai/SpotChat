@@ -13,7 +13,7 @@ import path from "path"
 
 dotenv.config();
 const PORT = process.env.PORT || 5001;
-const __dirname=path.resolve
+const __dirname=path.resolve();
 
 app.use(express.json({ limit: "10mb" }));
 app.use(cookieParser());
@@ -29,7 +29,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/messages",messageRoutes)
 app.use("/api/rooms",roomroutes);
 
-if(process.env.NODE_ENV==="prod" ){
+if(process.env.NODE_ENV==="production" ){
     app.use(express.static(path.join(__dirname,"../frontend/chat-app/dist")));
     app.get("*",(req,res)=>{
         res.sendFile(path.join(__dirname,"../frontend/chat-app","dist","index.html"))
