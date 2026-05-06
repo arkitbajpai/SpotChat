@@ -65,15 +65,23 @@ export const useAuthStore = create(
       },
 
       updateProfile: async (data) => {
-        set({ isUpdatingProfile: true });
-        try {
-          const res = await axiosInstance.put("/auth/update-profile", data);
-          set({ authUser: res.data });
-          toast.success("Profile updated");
-        } finally {
-          set({ isUpdatingProfile: false });
-        }
-      },
+  set({ isUpdatingProfile: true });
+
+  try {
+    const res = await axiosInstance.put("/auth/update-profile", data);
+
+    // ✅ FIX: merge instead of replace
+    set((state) => ({
+      authUser: { ...state.authUser, ...res.data },
+    }));
+
+    toast.success("Profile updated");
+  } catch (err) {
+    toast.error("Profile update failed");
+  } finally {
+    set({ isUpdatingProfile: false });
+  }
+},
 
       connectSocket: () => {
         const { authUser, socket } = get();
