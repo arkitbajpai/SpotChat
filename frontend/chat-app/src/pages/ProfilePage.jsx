@@ -38,11 +38,11 @@ const ProfilePage = () => {
           {/* Profile Image */}
           <div className="flex flex-col items-center gap-4">
             <div className="relative">
-              <img
+             <img
                 src={
                   selectedImg ||
                   (authUser?.profilePic
-                    ? `${authUser.profilePic}?t=${Date.now()}`
+                    ? `${authUser.profilePic}?t=${new Date().getTime()}`
                     : "/avatar.png")
                 }
                 alt="Profile"
