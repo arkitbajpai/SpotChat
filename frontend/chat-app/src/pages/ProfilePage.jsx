@@ -39,14 +39,9 @@ const ProfilePage = () => {
           <div className="flex flex-col items-center gap-4">
             <div className="relative">
              <img
-                src={
-                  selectedImg ||
-                  (authUser?.profilePic
-                    ? `${authUser.profilePic}?t=${new Date().getTime()}`
-                    : "/avatar.png")
-                }
-                alt="Profile"
-                className="size-32 rounded-full object-cover border-4 border-base-100"
+              src={selectedImg || authUser?.profilePic || "/avatar.png"}
+              alt="Profile"
+              className="size-32 rounded-full object-cover border-4 border-base-100"
               />
 
               <label
