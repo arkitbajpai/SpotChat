@@ -37,7 +37,7 @@ export const useAuthStore = create(
         set({ isSigningUp: true });
         try {
           const res = await axiosInstance.post("/auth/signup", data);
-          set({ authUser: res.data });
+          set({ authUser: res.data.user });
           toast.success("Signup successful");
           get().connectSocket();
         } finally {
@@ -49,7 +49,7 @@ export const useAuthStore = create(
         set({ isLoggingIn: true });
         try {
           const res = await axiosInstance.post("/auth/login", data);
-          set({ authUser: res.data });
+          set({ authUser: res.data.user});
           toast.success("Login successful");
           get().connectSocket();
         } finally {
@@ -64,54 +64,54 @@ export const useAuthStore = create(
         toast.success("Logout successful");
       },
 
-      updateProfile: async (data) => {
-  set({ isUpdatingProfile: true });
+  updateProfile: async (data) => {
+      set({ isUpdatingProfile: true });
 
-  try {
-    const res = await axiosInstance.put("/auth/update-profile", data);
+      try {
+        const res = await axiosInstance.put("/auth/update-profile", data);
 
-    // ✅ FIX: merge instead of replace
-    set((state) => ({
-      authUser: { ...state.authUser, ...res.data },
-    }));
+        // ✅ FIX: merge instead of replace
+        set((state) => ({
+          authUser: { ...state.authUser, ...res.data },
+        }));
 
-    toast.success("Profile updated");
-  } catch (err) {
-    toast.error("Profile update failed");
-  } finally {
-    set({ isUpdatingProfile: false });
-  }
-},
+        toast.success("Profile updated");
+      } catch (err) {
+        toast.error("Profile update failed");
+      } finally {
+        set({ isUpdatingProfile: false });
+      }
+    },
 
-      connectSocket: () => {
-        const { authUser, socket } = get();
-        if (!authUser || socket?.connected) return;
+          connectSocket: () => {
+            const { authUser, socket } = get();
+            if (!authUser || socket?.connected) return;
 
-        const newSocket = io(baseURL, {
-          withCredentials: true,
-          transports: ["websocket"],
-          query: { userId: authUser._id },
-        });
+            const newSocket = io(baseURL, {
+              withCredentials: true,
+              transports: ["websocket"],
+              query: { userId: authUser._id },
+            });
 
-        newSocket.on("getOnlineUsers", (userIds) => {
-          set({ onlineUsers: userIds });
-        });
+            newSocket.on("getOnlineUsers", (userIds) => {
+              set({ onlineUsers: userIds });
+            });
 
-        set({ socket: newSocket });
-      },
+            set({ socket: newSocket });
+          },
 
-      disconnectSocket: () => {
-        const socket = get().socket;
-        if (socket) socket.disconnect();
+          disconnectSocket: () => {
+            const socket = get().socket;
+            if (socket) socket.disconnect();
 
-        set({ socket: null, onlineUsers: [] });
-      },
-    }),
-    {
-      name: "auth-storage", // 🔥 key in localStorage
-      partialize: (state) => ({
-        authUser: state.authUser, // only persist user
-      }),
+            set({ socket: null, onlineUsers: [] });
+          },
+        }),
+        {
+          name: "auth-storage", // 🔥 key in localStorage
+          partialize: (state) => ({
+            authUser: state.authUser, // only persist user
+          }),
     }
   )
 );
