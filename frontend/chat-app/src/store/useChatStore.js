@@ -175,7 +175,7 @@ getRoomMessages: async (roomId) => {
   // =========================
   // SET SELECTED ROOM
   // =========================
-  setSelectedRoom: (selectedRoom) => {
+  setSelectedRoom: async(selectedRoom) => {
     const socket = useAuthStore.getState().socket;
     const { selectedRoom: prevRoom } = get();
 
@@ -190,5 +190,6 @@ getRoomMessages: async (roomId) => {
       selectedUser: null,
       messages: [],
     });
+     await get().getRoomMessages(selectedRoom._id);
   },
 }));
