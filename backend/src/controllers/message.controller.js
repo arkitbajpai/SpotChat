@@ -87,7 +87,7 @@ export const getRoomMessages = async (req, res) => {
     const { roomId } = req.params;
 
     const messages = await Message.find({ roomId })
-      .populate("senderId", "fullName profilepic")
+      .populate("senderId", "fullName profilePic")
       .sort({ createdAt: 1 });
 
     res.status(200).json({ messages });
@@ -129,7 +129,7 @@ export const sendRoomMessage = async (req, res) => {
 
     const populatedMessage = await newMessage.populate(
       "senderId",
-      "fullName profilepic"
+      "fullName profilePic"
     );
 
     io.to(roomId).emit("room-message", populatedMessage);

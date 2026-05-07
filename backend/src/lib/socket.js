@@ -69,7 +69,7 @@ io.on("connection", (socket) => {
  
 
   const user = await User.findById(userId)
-    .select("fullName profilepic");
+    .select("fullName profilePic");
 
   const message = {
     roomId,
