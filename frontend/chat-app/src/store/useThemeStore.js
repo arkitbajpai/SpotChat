@@ -1,20 +1,16 @@
 import { create } from "zustand";
 
 export const useThemeStore = create((set) => ({
-  theme: localStorage.getItem("chat-theme") || "coffee",
+  theme: localStorage.getItem("chat-theme") || "night", // ✅ default dark
 
   setTheme: (theme) => {
-    // ✅ APPLY THE THEME TO DAISYUI
     document.documentElement.setAttribute("data-theme", theme);
-
-    // persist
     localStorage.setItem("chat-theme", theme);
-
     set({ theme });
   },
 
   initTheme: () => {
-    const savedTheme = localStorage.getItem("chat-theme") || "coffee";
+    const savedTheme = localStorage.getItem("chat-theme") || "night"; // ✅ default dark
     document.documentElement.setAttribute("data-theme", savedTheme);
     set({ theme: savedTheme });
   },
