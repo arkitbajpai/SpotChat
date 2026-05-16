@@ -108,49 +108,52 @@ export const useChatStore = create((set, get) => ({
   // =========================
   // ROOM SOCKET
   // =========================
-  subscribeToRoomMessages: () => {
-    const { selectedRoom } = get();
-    if (!selectedRoom) return;
+  subscribeToNewMessages: () => {
+  const { selectedUser } = get();
+  if (!selectedUser) return;
 
-    const socket = useAuthStore.getState().socket;
-    if (!socket) return;
+  const socket = useAuthStore.getState().socket;
+  if (!socket) return;
 
-    socket.off("room-message");
-    socket.off("userTyping");
-    socket.off("userStoppedTyping");
+  socket.off("newMessage");
+  socket.off("userTyping");
+  socket.off("userStoppedTyping");
 
-    // room messages
-    socket.on("room-message", (message) => {
-      if (message.roomId !== selectedRoom._id) return;
+  // private messages
+  socket.on("newMessage", (newMessage) => {
+    const isRelevant =
+      newMessage.senderId === selectedUser._id ||
+      newMessage.receiverId === selectedUser._id;
 
-      set((state) => ({
-        messages: [...state.messages, message],
-      }));
+    if (!isRelevant) return;
+
+    set((state) => ({
+      messages: [...state.messages, newMessage],
+    }));
+  });
+
+  // private typing start
+  socket.on("userTyping", (name) => {
+    set({
+      typingUser: `${name} is typing...`,
     });
+  });
 
-    // typing start
-    socket.on("userTyping", (name) => {
-      set({
-        typingUser: `${name} is typing...`,
-      });
+  // private typing stop
+  socket.on("userStoppedTyping", () => {
+    set({
+      typingUser: "",
     });
+  });
+},
+  unsubscribeFromNewMessages: () => {
+  const socket = useAuthStore.getState().socket;
+  if (!socket) return;
 
-    // typing stop
-    socket.on("userStoppedTyping", () => {
-      set({
-        typingUser: "",
-      });
-    });
-  },
-
-  unsubscribeFromRoomMessages: () => {
-    const socket = useAuthStore.getState().socket;
-    if (!socket) return;
-
-    socket.off("room-message");
-    socket.off("userTyping");
-    socket.off("userStoppedTyping");
-  },
+  socket.off("newMessage");
+  socket.off("userTyping");
+  socket.off("userStoppedTyping");
+},
 
   // =========================
   // SET SELECTED USER
