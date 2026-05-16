@@ -14,11 +14,12 @@ const ChatContainer = () => {
     isMessageLoading,
     selectedUser,
     selectedRoom, 
-    getRoomMessages,// ✅ FIXED
+    getRoomMessages,
     subscribeToRoomMessages,
     unsubscribeFromRoomMessages,
     subscribeToNewMessages,       
-  unsubscribeFromNewMessages
+  unsubscribeFromNewMessages,
+  typingUser,
   } = useChatStore();
   useEffect(() => {
   if (!selectedUser) return;
@@ -137,6 +138,11 @@ const ChatContainer = () => {
           </div>
         ))}
       </div>
+      {typingUser && (
+            <div className="px-4 pb-2 text-sm text-zinc-400 italic">
+              {typingUser}
+            </div>
+          )}
 
       <MessageInput />
     </div>

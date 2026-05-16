@@ -11,6 +11,7 @@ export const useChatStore = create((set, get) => ({
   users: [],
   selectedUser: null,
   selectedRoom: null,
+  typingUser: "", // ✅ Added
   isUserLoading: false,
   isMessageLoading: false,
 
@@ -115,13 +116,30 @@ export const useChatStore = create((set, get) => ({
     if (!socket) return;
 
     socket.off("room-message");
+    socket.off("userTyping");
+    socket.off("userStoppedTyping");
 
+    // room messages
     socket.on("room-message", (message) => {
       if (message.roomId !== selectedRoom._id) return;
 
       set((state) => ({
         messages: [...state.messages, message],
       }));
+    });
+
+    // typing start
+    socket.on("userTyping", (name) => {
+      set({
+        typingUser: `${name} is typing...`,
+      });
+    });
+
+    // typing stop
+    socket.on("userStoppedTyping", () => {
+      set({
+        typingUser: "",
+      });
     });
   },
 
@@ -130,66 +148,83 @@ export const useChatStore = create((set, get) => ({
     if (!socket) return;
 
     socket.off("room-message");
+    socket.off("userTyping");
+    socket.off("userStoppedTyping");
   },
 
   // =========================
   // SET SELECTED USER
   // =========================
   setSelectedUser: async (selectedUser) => {
-  const socket = useAuthStore.getState().socket;
-  const { selectedRoom, getMessages } = get();
+    const socket = useAuthStore.getState().socket;
+    const { selectedRoom, getMessages } = get();
 
-  if (selectedRoom) {
-    socket?.emit("leave-room", { roomId: selectedRoom._id });
-  }
-
-  set({
-    selectedUser,
-    selectedRoom: null,
-    messages: [],
-  });
-
-  // ✅ Fetch old messages
-  if (selectedUser?._id) {
-    getMessages(selectedUser._id);
-  }
-},
-
-getRoomMessages: async (roomId) => {
-  try {
-    set({ isMessageLoading: true });
-
-    const res = await axiosInstance.get(`/messages/room/${roomId}`);
+    if (selectedRoom) {
+      socket?.emit("leave-room", {
+        roomId: selectedRoom._id,
+      });
+    }
 
     set({
-      messages: res.data.messages,
+      selectedUser,
+      selectedRoom: null,
+      messages: [],
+      typingUser: "",
     });
 
-  } catch (error) {
-    toast.error("Failed to fetch room messages");
-  } finally {
-    set({ isMessageLoading: false });
-  }
-},
+    if (selectedUser?._id) {
+      getMessages(selectedUser._id);
+    }
+  },
 
   // =========================
-  // SET SELECTED ROOM
+  // ROOM MESSAGES
   // =========================
-  setSelectedRoom: async(selectedRoom) => {
+  getRoomMessages: async (roomId) => {
+    try {
+      set({ isMessageLoading: true });
+
+      const res = await axiosInstance.get(
+        `/messages/room/${roomId}`
+      );
+
+      set({
+        messages: res.data.messages,
+      });
+
+    } catch (error) {
+      toast.error("Failed to fetch room messages");
+    } finally {
+      set({ isMessageLoading: false });
+    }
+  },
+
+  // =========================
+  // SET ROOM
+  // =========================
+  setSelectedRoom: async (selectedRoom) => {
     const socket = useAuthStore.getState().socket;
     const { selectedRoom: prevRoom } = get();
 
     if (prevRoom) {
-      socket?.emit("leave-room", { roomId: prevRoom._id });
+      socket?.emit("leave-room", {
+        roomId: prevRoom._id,
+      });
     }
 
-    socket?.emit("join-room", { roomId: selectedRoom._id });
+    socket?.emit("join-room", {
+      roomId: selectedRoom._id,
+    });
 
     set({
       selectedRoom,
       selectedUser: null,
       messages: [],
+      typingUser: "",
     });
-     await get().getRoomMessages(selectedRoom._id);
+
+    await get().getRoomMessages(
+      selectedRoom._id
+    );
   },
 }));

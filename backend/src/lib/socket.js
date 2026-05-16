@@ -48,6 +48,43 @@ io.on("connection", (socket) => {
       roomId,
     });
   });
+  //---------
+  // Typing Indicator
+  //----------
+
+  socket.on("typing", ({ roomId, username }) => {
+  socket.to(roomId).emit("userTyping", username);
+    });
+
+socket.on("stopTyping", ({ roomId }) => {
+  socket.to(roomId).emit("userStoppedTyping");
+});
+
+// PERSONAL CHAT TYPING
+socket.on("private-typing", ({ receiverId, username }) => {
+
+ const receiverSocketId = getRecevierSocketId(receiverId);
+
+ if(receiverSocketId){
+   io.to(receiverSocketId).emit(
+      "userTyping",
+      username
+   );
+ }
+
+});
+
+socket.on("private-stop-typing", ({ receiverId }) => {
+
+ const receiverSocketId = getRecevierSocketId(receiverId);
+
+ if(receiverSocketId){
+   io.to(receiverSocketId).emit(
+      "userStoppedTyping"
+   );
+ }
+
+});
 
   // -------------------------
   // LEAVE ROOM
@@ -63,7 +100,7 @@ io.on("connection", (socket) => {
   });
 
   // -------------------------
-  // 🔥 ROOM MESSAGE (FIXED)
+  //  ROOM MESSAGE 
   // -------------------------
   socket.on("room-message", async ({ roomId, text, image }) => {
  
@@ -76,7 +113,7 @@ io.on("connection", (socket) => {
     text,
     image,
     senderId: userId,
-    sender: user, // ⭐ add sender info
+    sender: user, 
     createdAt: new Date(),
   };
 
